@@ -3,7 +3,7 @@ session_start();
 include 'conn.php';
 
 
-$results_per_page = 3;
+$results_per_page = 12;
 $cart_count = '';
 if (!empty($_SESSION["shopping_cart"])) {
   $cart_count = count(array_keys($_SESSION["shopping_cart"]));
