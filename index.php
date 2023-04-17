@@ -3,7 +3,7 @@ session_start();
 include 'conn.php';
 
 
-$results_per_page = 12;
+$results_per_page = 3;
 $cart_count = '';
 if (!empty($_SESSION["shopping_cart"])) {
   $cart_count = count(array_keys($_SESSION["shopping_cart"]));
@@ -33,6 +33,16 @@ if(!empty($_SESSION['temp'])){
               <link href='style.css' rel='stylesheet'>
               <link rel='icon' href='icon.ico' type='image/icon type'>
               <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD' crossorigin='anonymous'>
+              <style>
+                .page-link{
+                  color: #16df7e !Important;
+                }
+                .pagination > .active > a{
+                  background: #16df7e !Important;
+                  border-color: #16df7e;
+                  color: white !Important;
+                }
+              </style>           
           </head>
           <body>";
       echo '
@@ -104,7 +114,7 @@ if(!empty($_SESSION['temp'])){
                     <li class='page-item ".(($page == 1)? 'disabled' : '')."'><a class='page-link' href='index.php?page=". (($page == 1)? '1' : $page - 1) ."'>Previous</a></li>
                     ";
                     for($page_no = 1; $page_no<= $number_of_page; $page_no++) {  
-                     echo " <li class='page-item ".(($page == $page_no)? 'active' : '')."'><a class='page-link' href='index.php?page=". $page_no ."'>". $page_no ."</a></li>";
+                     echo " <li class='page-item ".(($page == $page_no)? "active'" : "'")."><a class='page-link' href='index.php?page=". $page_no ."'>". $page_no ."</a></li>";
                     }  
                     echo "<li class='page-item ".(($page == $number_of_page || $number_of_result == $results_per_page)? 'disabled' : '')."'><a class='page-link' href='index.php?page=". (($page == $number_of_page || $number_of_result == $results_per_page)? '' : $page + 1)."'>Next</a></li>
                     </ul>
