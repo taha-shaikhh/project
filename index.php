@@ -80,7 +80,7 @@ if(!empty($_SESSION['temp'])){
           </div>
         </div>
         <div class="col-lg-6 order-1 order-lg-2 hero-img">
-          <img src="hero-img.png" class="img-fluid animated" alt="">
+          <img src="1.jpg" class="img-fluid animated" alt="">
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@ if(!empty($_SESSION['temp'])){
         while($r = mysqli_fetch_assoc($result1)){
         echo "<form name='productitemlist' method='get' action='product_detail.php'>";
           echo "<input type='hidden' name='pid' value='".$r['pid']."'/>";
-          echo "<button type='submit' class='btn'>";
+          echo "<button type='submit' class='btn w-100'>";
                   echo "<div class='col'>";
                   echo "<div class='card h-100 border-light rounded-4'>";
                   echo "<img src='".$r['image']."' width='500' height='500' class='card-img-top'>";
@@ -109,7 +109,7 @@ if(!empty($_SESSION['temp'])){
                 }
                 echo "
                 </div>
-                    <div class='container'>
+                    <div class='container table-responsive'>
                     <ul class='pagination justify-content-center'>
                     <li class='page-item ".(($page == 1)? 'disabled' : '')."'><a class='page-link' href='index.php?page=". (($page == 1)? '1' : $page - 1) ."'>Previous</a></li>
                     ";

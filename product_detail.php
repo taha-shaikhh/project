@@ -109,7 +109,7 @@ if (isset($_POST["action"]) and $_POST["action"] == "cart") {
             <input type='hidden' value='".$r['name']."' name='name' />
             <input type='hidden' value='".$r['price']."' name='price' />
             <input type='hidden' value='".$r['image']."' name='image' />
-            <div class='d-flex'>
+            <div class='d-flex justify-content-lg-start justify-content-between'>
             <p class=' my-auto col-sm-1'>Size</p>
             <div class='col-sm-3'>
             <input class='form-control' type='text' name='size' required placeholder='in inches'>
