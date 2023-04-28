@@ -58,7 +58,7 @@ if(isset($_POST['name'])){
 
         <div class="row">
           <div class="col-lg-6">
-            <img src="home.jpg" class="img-fluid" alt="">
+            <img src="about.jpg" class="img-fluid" alt="">
           </div>
           <div class="col-lg-6 pt-4 pt-lg-0 content">
             <h3>Famous Old Wood Timber Mart and Furniture</h3>
