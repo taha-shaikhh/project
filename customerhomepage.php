@@ -8,28 +8,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="adminlte.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
     .gradient-custom {
         /* fallback for old browsers */
         background: #007BFF;
 
         /* Chrome 10-25, Safari 5.1-6 */
-        background: -webkit-linear-gradient(to right bottom, #7FBDFF, #007BFF;
+        background: -webkit-linear-gradient(to right bottom, #7FBDFF, #007BFF);
 
         /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-        background: linear-gradient(to right bottom, #7FBDFF, #007BFF
+        background: linear-gradient(to right bottom, #7FBDFF, #007BFF)
     }
     </style>
 </head>
 
 <body>
-    <div class="col-3">
 
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-            Logout
-        </a>
+    <div >
+        <div class="col-3 d-flex float-right justify-content-center my-2">
+            <a class="text-danger" href="#">
+                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                Logout
+            </a>
+        </div>
     </div>
     <section style="background-color: #f4f5f7;">
         <div class="container py-5">
@@ -43,7 +45,7 @@
                                     alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
                                 <h5>John Watt</h5>
                                 <p>Web Designer</p>
-                                <i class="far fa-edit mb-5"></i>
+                                <a><i class="fa-regular fa-pen-to-square"></i></a>
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body p-4">
@@ -95,9 +97,8 @@
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left  border-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
+                <div class="card-body ">
+                    <div class="row no-gutters align-items-center callout callout-info">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Last Recharge on</div>
@@ -108,11 +109,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
 
     </div>
 
+    <div class="row">
+        <div class="col-md-2 m-auto">
+            <a href="rechargepage.php" class="btn btn-block btn-outline-primary btn-flat">Recharge</a>
+        </div>
+    </div>
 
     <div class="card">
         <h3 class="card-title">DataTable with minimal </h3>
