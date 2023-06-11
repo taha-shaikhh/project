@@ -7,6 +7,9 @@
     <title>Recharge</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="adminlte.min.css">
 </head>
 
@@ -64,8 +67,8 @@
                                                     <th>ID</th>
                                                     <th>User</th>
                                                     <th>Date</th>
-                                                    <th>Status</th>
-                                                    <th>Reason</th>
+                                                    <th>Channels</th>
+                                                    <th>Recharge</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -73,9 +76,58 @@
                                                     <td>183</td>
                                                     <td>John Doe</td>
                                                     <td>11-7-2014</td>
-                                                    <td><span class="tag tag-success">Approved</span></td>
-                                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback
-                                                        doner.</td>
+                                                    
+                                                    <td><button type="button" class="btn btn-link"
+                                                            data-bs-toggle="modal" data-bs-target="#broadcastBackDrop">
+                                                            View Details
+                                                        </button>
+
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="broadcastBackDrop"
+                                                            data-bs-backdrop="static" data-bs-keyboard="false"
+                                                            tabindex="-1" aria-labelledby="broadCastBackDropLabel"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-scrollable">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5"
+                                                                            id="broadCastBackDropLabel">Channel Details
+                                                                        </h1>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+
+                                                                        <table class="table">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th scope="col">#</th>
+                                                                                    <th scope="col">First</th>
+                                                                                    <th scope="col">Last</th>
+                                                                                    <th scope="col">Handle</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <th scope="row">1</th>
+                                                                                    <td>Mark</td>
+                                                                                    <td>Otto</td>
+                                                                                    <td>@mdo</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><button type="button" class="btn btn-success">Recharge</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -117,8 +169,8 @@
                                                     <th>ID</th>
                                                     <th>User</th>
                                                     <th>Date</th>
-                                                    <th>Status</th>
-                                                    <th>Reason</th>
+                                                    <th>Channels</th>
+                                                    <th>Recharge</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -127,8 +179,59 @@
                                                     <td>John Doe</td>
                                                     <td>11-7-2014</td>
                                                     <td><span class="tag tag-success">Approved</span></td>
-                                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback
-                                                        doner.</td>
+                                                    <td>
+                                                        <!-- Button trigger modal -->
+                                                        <button type="button" class="btn btn-link"
+                                                            data-bs-toggle="modal" data-bs-target="#channelBackDrop">
+                                                            View Details
+                                                        </button>
+
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="channelBackDrop"
+                                                            data-bs-backdrop="static" data-bs-keyboard="false"
+                                                            tabindex="-1" aria-labelledby="channelsDetailsLabel"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-scrollable">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h1 class="modal-title fs-5"
+                                                                            id="channelsDetailsLabel">Channel Details
+                                                                        </h1>
+                                                                        <button type="button" class="btn-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+
+                                                                        <table class="table">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th scope="col">#</th>
+                                                                                    <th scope="col">First</th>
+                                                                                    <th scope="col">Last</th>
+                                                                                    <th scope="col">Handle</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <th scope="row">1</th>
+                                                                                    <td>Mark</td>
+                                                                                    <td>Otto</td>
+                                                                                    <td>@mdo</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Close</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><button type="button" class="btn btn-success">Recharge</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -146,8 +249,9 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h3 class="card-title">ALL Channels Table</h3>
-
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-success">Recharge</button>
+                                        </div>
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
                                                 <input type="text" name="table_search" class="form-control float-right"
@@ -178,9 +282,8 @@
                                                     <td>183</td>
                                                     <td>John Doe</td>
                                                     <td>11-7-2014</td>
-                                                    <td><span class="tag tag-success">Approved</span></td>
-                                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback
-                                                        doner.</td>
+                                                    <td>Approved</td>
+                                                    <td><button type="button" class="btn btn-info">+ Add</button></td>
                                                 </tr>
                                             </tbody>
                                         </table>
