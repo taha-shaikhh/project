@@ -1,3 +1,48 @@
+<?php 
+
+    include "config.php";
+    session_start();
+
+    if($_SESSION["vc_id"]){
+        $vc = $_SESSION["vc_id"];
+        $sql = "SELECT * FROM `users` WHERE `vc_id` = $vc;";
+        $sql .= "SELECT * FROM `recharge_details` WHERE `vc_id` = '$vc' ORDER BY `recharge_id` DESC;";
+        $sql .= "select date, DATEDIFF(now(), date) AS diff from recharge_details where month(date)= month(now())-1 AND `vc_id` = '$vc';";
+        if ($conn -> multi_query($sql)) {
+              // Store first result set
+              if ($result = $conn -> store_result()) {
+                    while ($row = $result -> fetch_row()) {
+                        $name = $row[1];
+                        $vc_id = $row[2];
+                        $mobile_no = $row[3];
+                        $email = $row[4];
+                        $address = $row[5];
+                    }
+               $result -> free_result();
+                }
+              
+              if($conn -> more_results()){
+                  $conn->next_result();
+                  $recharge_details = $conn->store_result();
+                  
+              }
+
+              if ($conn -> more_results()) {
+                    //Prepare next result set
+                    $conn -> next_result();
+                    $result = $conn->store_result();
+                    $row = $result -> fetch_row();
+                    $last_recharge = $row[0];
+                    $date=date_create($last_recharge);
+                    $last_recharge = date_format($date,"d/m/Y");
+                    $days_left = $row[1];
+                    $result->free_result();
+                }
+        }
+          
+        $conn->close();
+        
+echo '        
 <!doctype html>
 <html lang="en">
 
@@ -6,28 +51,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ACV</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="adminlte.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-    .gradient-custom {
-        /* fallback for old browsers */
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .gradient-custom {
         background: #007BFF;
-
-        /* Chrome 10-25, Safari 5.1-6 */
         background: -webkit-linear-gradient(to right bottom, #7FBDFF, #007BFF);
-
-        /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
         background: linear-gradient(to right bottom, #7FBDFF, #007BFF)
     }
     </style>
 </head>
 
 <body>
-
-    <div >
-        <div class="col-3 d-flex float-right justify-content-center my-2">
-            <a class="text-danger" href="#">
+    
+    <div>
+        <div class="col-5 d-flex float-right justify-content-center my-2">
+            <a class="text-danger" href="logout.php">
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                 Logout
             </a>
@@ -41,11 +83,9 @@
                         <div class="row g-0">
                             <div class="col-md-4 gradient-custom text-center text-white"
                                 style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                                <img src="avator.avif"
-                                    alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
-                                <h5>John Watt</h5>
-                                <p>Web Designer</p>
-                                <a><i class="fa-regular fa-pen-to-square"></i></a>
+                                <img src="avator.avif" alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
+                                <h5>'.$name.'</h5>
+                                <button><i class="fa-regular fa-pen-to-square"></i></button>
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body p-4">
@@ -53,29 +93,26 @@
                                     <hr class="mt-0 mb-4">
                                     <div class="row pt-1">
                                         <div class="col-6 mb-3">
-                                            <div class="form-outline">
-                                                <input type="text" id="form12" class="form-control" readonly />
-                                                <label class="form-label" for="form12">Example label</label>
-                                            </div>
+                                        <h6>VC ID</h6>
+                                        <p class="text-muted">'.$vc_id.'</p>
                                         </div>
                                         <div class="col-6 mb-3">
                                             <h6>Phone</h6>
-                                            <p class="text-muted">123 456 789</p>
+                                            <p class="text-muted">'.$mobile_no.'</p>
                                         </div>
                                     </div>
-                                    <h6>Projects</h6>
                                     <hr class="mt-0 mb-4">
                                     <div class="row pt-1">
                                         <div class="col-6 mb-3">
-                                            <h6>Recent</h6>
-                                            <p class="text-muted">Lorem ipsum</p>
+                                            <h6>Email</h6>
+                                            <p class="text-muted">'.$email.'</p>
                                         </div>
                                         <div class="col-6 mb-3">
-                                            <h6>Most Viewed</h6>
-                                            <p class="text-muted">Dolor sit amet</p>
+                                            <h6>Address</h6>
+                                            <p class="text-muted">'.$address.'</p>
                                         </div>
-                                </div>
-                               
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -86,70 +123,67 @@
     </section>
 
 
-
-
+    
+    
     <div class="row justify-content-around">
-
+        
         <div class="col-6 col-md-3 text-center">
-            <input type="text" class="knob text-primary" value="28   " data-width="90" data-height="90" disabled>
-
+            <input type="text" class="knob text-primary" value="'.(($days_left > 28 ? 0 : $days_left )).'" data-width="90" data-height="90" disabled>
+            
             <div class="text-xs knob-label font-weight-bold text-primary text-uppercase">Days Left</div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card-body ">
-                    <div class="row no-gutters align-items-center callout callout-info">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Last Recharge on</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">12-03-2023</div>
+            <div class="card-body ">
+                <div class="row no-gutters align-items-center callout callout-info">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Last Recharge on</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">'.$last_recharge.'</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
+            </div>
+            
         </div>
-
-    </div>
-
+        
     <div class="row">
         <div class="col-md-2 m-auto">
-            <a href="rechargepage.php" class="btn btn-block btn-outline-primary btn-flat">Recharge</a>
+            <a href="rechargepage.php" class="btn btn-block btn-outline-primary btn-flat mb-4">Recharge Now</a>
         </div>
     </div>
-
+    
     <div class="card">
-        <h3 class="card-title">DataTable with minimal </h3>
-        <table class="table">
+        <h3 class="card-title text-center my-2"><b>Recharge History</b></h3>
+        <div class="card-body table-responsive p-0">
+        <table class="table table-hover text-nowrap">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                    <th scope="col">VC ID</th>
+                    <th scope="col">Pack Details</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Transaction ID</th>
+                    <th scope="col">Date</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody>';
+            while ($r = $recharge_details -> fetch_row()) {
+                echo '
                 <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>@twitter</td>
-                </tr>
+                    <th scope="row">'.$r[2].'</th>
+                    <td>'.$r[3].'</td>
+                    <td>'.$r[4].'</td>
+                    <td>'.$r[5].'</td>
+                    <td>'.$r[6].'</td>
+                </tr>';
+            }
+            echo '
             </tbody>
         </table>
+        </div>
     </div>
     <nav aria-label="...">
         <ul class="pagination justify-content-center">
@@ -166,24 +200,29 @@
             </li>
         </ul>
     </nav>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
-    </script>
-    <!-- jQuery -->
-    <script src="jquery.min.js"></script>
-    <!-- jQuery Knob -->
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+</script>
+<!-- jQuery -->
+<script src="jquery.min.js"></script>
+<!-- jQuery Knob -->
     <script src="jquery.knob.min.js"></script>
     <script>
-    $(function() {
+        $(function() {
         /* jQueryKnob */
-
-        $('.knob').knob({
+        
+        $(".knob").knob({
             "readOnly": true
         })
-
+        
     })
-    </script>
+</script>
 </body>
-
-</html>
+</html>';
+$recharge_details->free_result();
+}else{
+    header("location:login.php");
+}
+$conn->close();
+?>

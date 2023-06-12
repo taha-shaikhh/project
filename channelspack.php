@@ -1,28 +1,34 @@
 <?php
 include "adminheader.php";
-?>
+include "config.php";
+session_start();
+if($_SESSION["admin"]){
+    $sql = "SELECT * FROM `packs` WHERE `pack_type` = 'Channels'";
+    $result = $conn->query($sql);
+    echo '
 
-
+    
+    
 <div class="content-wrapper">
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
             <h1 class="m-0">Channels Pack</h1>
-          </div>
+        </div>
         </div>
       </div>
     </div>
-
-<section class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
+    
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <div class="card-tools">
                             <div class="input-group input-group-sm" style="width: 150px;">
-                                <input type="text" name="table_search" class="form-control float-right"
+                                <input type="text" name="table_search" oninput="channelsSearch()" id="channelsSearchInput" class="form-control float-right"
                                     placeholder="Search">
 
                                 <div class="input-group-append">
@@ -34,45 +40,26 @@ include "adminheader.php";
                         </div>
                     </div>
                     <div class="card-body table-responsive p-0">
-                        <table class="table table-hover text-nowrap">
+                        <table class="table table-hover text-nowrap" id="channelsSearchTable">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>User</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Reason</th>
+                                    <th>Pack ID</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Channels</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody>';
+                            if ($result->num_rows > 0) {
+                                while($row = $result->fetch_assoc()) {
+                                echo '
                                 <tr>
-                                    <td>183</td>
-                                    <td>John Doe</td>
-                                    <td>11-7-2014</td>
-                                    <td><span class="tag tag-success">Approved</span></td>
-                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                                </tr>
-                                <tr>
-                                    <td>219</td>
-                                    <td>Alexander Pierce</td>
-                                    <td>11-7-2014</td>
-                                    <td><span class="tag tag-warning">Pending</span></td>
-                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                                </tr>
-                                <tr>
-                                    <td>657</td>
-                                    <td>Bob Doe</td>
-                                    <td>11-7-2014</td>
-                                    <td><span class="tag tag-primary">Approved</span></td>
-                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                                </tr>
-                                <tr>
-                                    <td>175</td>
-                                    <td>Mike Doe</td>
-                                    <td>11-7-2014</td>
-                                    <td><span class="tag tag-danger">Denied</span></td>
-                                    <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-                                </tr>
+                                    <td><a class="btn btn-link" href="channelsdetails.php?pid='.$row["pack_id"].'">'.$row["pack_id"].'</a></td>
+                                    <td>'.$row["pack_name"].'</td>
+                                    <td>'.$row["pack_price"].'</td>
+                                    <td>'.$row["channels"].'</td>
+                                </tr>';}}
+                                echo '
                             </tbody>
                         </table>
                     </div>
@@ -81,5 +68,32 @@ include "adminheader.php";
         </div>
     </div>
 </section>
+<script>
+function channelsSearch() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("channelsSearchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("channelsSearchTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
 </body>
 </html>
+';
+}else{
+    header("location:adminlogin.php");
+}
+$conn->close();
+?>

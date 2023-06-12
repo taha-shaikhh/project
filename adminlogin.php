@@ -1,24 +1,17 @@
-<?php 
-  include "config.php";
+<?php
   session_start();
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
     $userid = $_POST["userid"];
     $password = $_POST["password"];
-    $stmt = $conn->prepare("SELECT `user_name`, `vc_id`, `password` FROM `users` WHERE `vc_id` = ? AND `password` = ?");
-    $stmt->bind_param("ss", $userid, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if($result->num_rows > 0){
-      while($row = $result->fetch_assoc()){
-        $_SESSION["vc_id"] = $row["vc_id"];
-      }
-      header("location:customerhomepage.php");
+    echo "hello";
+    if($password == "admin" and $userid == "admin"){
+      $_SESSION["admin"] = "admin";
+      header("location:dashboard.php");
     }else{
       $error = "Invalid Credentials";
     }
-    $stmt->close();
-    $conn->close();
+
   }
 ?>
 
@@ -49,7 +42,7 @@
                       
                       <div class="d-flex align-items-center mb-3 pb-1">
                           <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
-                    <span class="h1 fw-bold mb-0">Logo</span>
+                    <span class="h1 fw-bold mb-0">Admin</span>
                   </div>
 
                   <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>

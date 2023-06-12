@@ -1,5 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php 
+session_start();
+if($_SESSION["admin"]){
+echo '
+    <!DOCTYPE html>
+    <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,11 +18,11 @@
 
 <body>
     
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
                     <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                 </div>
@@ -26,7 +30,7 @@
                     <a href="#" class="d-block">Amin Cable</a>
                 </div>
             </div>
-
+            
             <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <nav class="mt-2">
@@ -84,6 +88,12 @@
                                         <p>Channels Pack</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="addpack.php" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add Pack</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -95,7 +105,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link text-danger">
+                            <a href="logout.php" class="nav-link text-danger">
                                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                 <p>
                                     Logout
@@ -108,11 +118,13 @@
     </aside>
     <script src="jquery.min.js"></script>
     <script>
-    $("#users").click(function() {
+        $("#users").click(function() {
         $("#userslist").toggle();
     });
 
     $("#packs").click(function() {
         $("#packslist").toggle();
     });
-    </script>
+</script>';
+}
+?>

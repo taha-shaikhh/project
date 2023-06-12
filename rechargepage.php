@@ -1,3 +1,40 @@
+<?php 
+
+include "config.php";
+session_start();
+
+if($_SESSION["vc_id"]){
+    $sql = "SELECT * FROM `packs` WHERE `pack_type` = 'Broadcast';";
+    $sql .= "SELECT * FROM `packs` WHERE `pack_type` = 'Channels';";
+    $sql .= "SELECT * FROM `all_channels`;";
+    if ($conn -> multi_query($sql)) {
+
+        $broadcast_packs = $conn -> store_result(); 
+
+        if($conn -> more_results()){
+            $conn->next_result();
+            $channels_pack = $conn->store_result();   
+        }
+
+
+        if($conn -> more_results()){
+            $conn->next_result();
+            $all_channels = $conn->store_result();   
+        }
+
+        if ($result = $conn -> store_result()) {
+                while ($row = $result -> fetch_row()) {
+                    $name = $row[1];
+                    $vc_id = $row[2];
+                    $mobile_no = $row[3];
+                    $email = $row[4];
+                    $address = $row[5];
+                }
+            }
+    }
+          
+
+echo '
 <!doctype html>
 <html lang="en">
 
@@ -8,8 +45,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="adminlte.min.css">
 </head>
 
@@ -64,71 +101,31 @@
                                         <table class="table table-hover text-nowrap">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>User</th>
-                                                    <th>Date</th>
+                                                    <th>Name</th>
+                                                    <th>Price</th>
                                                     <th>Channels</th>
                                                     <th>Recharge</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            <form method="post" action="">';
+                                            while ($b = $broadcast_packs -> fetch_row()) {
+                                                echo '
                                                 <tr>
-                                                    <td>183</td>
-                                                    <td>John Doe</td>
-                                                    <td>11-7-2014</td>
-                                                    
-                                                    <td><button type="button" class="btn btn-link"
-                                                            data-bs-toggle="modal" data-bs-target="#broadcastBackDrop">
+                                                    <td>'.$b["1"].'</td>
+                                                    <td>'.$b["2"].'</td>
+                                                    <input type="hidden" name="id" value="'.$b["0"].'">
+                                                    <input type="hidden" name="type" value="Broadcast">
+                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$b["0"].'&type=Broadcast"
+                                                        >
                                                             View Details
-                                                        </button>
-
-                                                        <!-- Modal -->
-                                                        <div class="modal fade" id="broadcastBackDrop"
-                                                            data-bs-backdrop="static" data-bs-keyboard="false"
-                                                            tabindex="-1" aria-labelledby="broadCastBackDropLabel"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog modal-dialog-scrollable">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h1 class="modal-title fs-5"
-                                                                            id="broadCastBackDropLabel">Channel Details
-                                                                        </h1>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-
-                                                                        <table class="table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th scope="col">#</th>
-                                                                                    <th scope="col">First</th>
-                                                                                    <th scope="col">Last</th>
-                                                                                    <th scope="col">Handle</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <th scope="row">1</th>
-                                                                                    <td>Mark</td>
-                                                                                    <td>Otto</td>
-                                                                                    <td>@mdo</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Close</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        </a>
                                                     </td>
-                                                    <td><button type="button" class="btn btn-success">Recharge</button></td>
-                                                </tr>
+                                                    <td><button type="submit" class="btn btn-info">Recharge</button>
+                                                    </td>
+                                                </tr>';}
+                                            echo '
+                                            </form>
                                             </tbody>
                                         </table>
                                     </div>
@@ -154,7 +151,7 @@
                                                     placeholder="Search">
 
                                                 <div class="input-group-append">
-                                                    <button type="submit" class="btn btn-default">
+                                                    <button type="button" class="btn btn-default">
                                                         <i class="fas fa-search"></i>
                                                     </button>
                                                 </div>
@@ -166,73 +163,31 @@
                                         <table class="table table-hover text-nowrap">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>User</th>
-                                                    <th>Date</th>
+                                                    <th>Name</th>
+                                                    <th>Price</th>
                                                     <th>Channels</th>
                                                     <th>Recharge</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            <form method="post" action="packdetails.php">';
+                                            while ($c = $channels_pack -> fetch_row()) {
+                                                echo '
                                                 <tr>
-                                                    <td>183</td>
-                                                    <td>John Doe</td>
-                                                    <td>11-7-2014</td>
-                                                    <td><span class="tag tag-success">Approved</span></td>
-                                                    <td>
-                                                        <!-- Button trigger modal -->
-                                                        <button type="button" class="btn btn-link"
-                                                            data-bs-toggle="modal" data-bs-target="#channelBackDrop">
+                                                    <td>'.$c["1"].'</td>
+                                                    <td>'.$c["2"].'</td>
+                                                    <input type="hidden" name="id" value="'.$c["0"].'">
+                                                    <input type="hidden" name="type" value="channels">
+                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$c["0"].'&type=Channels"
+                                                        >
                                                             View Details
-                                                        </button>
-
-                                                        <!-- Modal -->
-                                                        <div class="modal fade" id="channelBackDrop"
-                                                            data-bs-backdrop="static" data-bs-keyboard="false"
-                                                            tabindex="-1" aria-labelledby="channelsDetailsLabel"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog modal-dialog-scrollable">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h1 class="modal-title fs-5"
-                                                                            id="channelsDetailsLabel">Channel Details
-                                                                        </h1>
-                                                                        <button type="button" class="btn-close"
-                                                                            data-bs-dismiss="modal"
-                                                                            aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-
-                                                                        <table class="table">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th scope="col">#</th>
-                                                                                    <th scope="col">First</th>
-                                                                                    <th scope="col">Last</th>
-                                                                                    <th scope="col">Handle</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <th scope="row">1</th>
-                                                                                    <td>Mark</td>
-                                                                                    <td>Otto</td>
-                                                                                    <td>@mdo</td>
-                                                                                </tr>
-                                                                            </tbody>
-                                                                        </table>
-
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-bs-dismiss="modal">Close</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                        </a>
                                                     </td>
-                                                    <td><button type="button" class="btn btn-success">Recharge</button></td>
-                                                </tr>
+                                                    <td><button type="submit" class="btn btn-info">Recharge</button>
+                                                    </td>
+                                                </tr>';}
+                                                echo '
+                                                </form>
                                             </tbody>
                                         </table>
                                     </div>
@@ -248,17 +203,18 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="card">
+                                <form method="post" action="alacartesumup.php">
                                     <div class="card-header">
                                         <div class="text-center">
-                                            <button type="button" class="btn btn-success">Recharge</button>
+                                            <button type="submit" class="btn btn-info">Recharge</button>
                                         </div>
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
-                                                <input type="text" name="table_search" class="form-control float-right"
+                                                <input type="text" oninput="allChannelsSearch()" id="allChannelsSearchInput" name="table_search" class="form-control float-right"
                                                     placeholder="Search">
 
                                                 <div class="input-group-append">
-                                                    <button type="submit" class="btn btn-default">
+                                                    <button type="button" class="btn btn-default" onClick="allChannelsSearch()">
                                                         <i class="fas fa-search"></i>
                                                     </button>
                                                 </div>
@@ -267,63 +223,89 @@
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap">
+                                        <table class="table table-hover text-nowrap" id="allChannelsTable">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>User</th>
-                                                    <th>Date</th>
-                                                    <th>Status</th>
-                                                    <th>Reason</th>
+                                                    <th>Channel Name</th>
+                                                    <th>Price</th>
+                                                    <th>Add</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>183</td>
-                                                    <td>John Doe</td>
-                                                    <td>11-7-2014</td>
-                                                    <td>Approved</td>
-                                                    <td><button type="button" class="btn btn-info">+ Add</button></td>
-                                                </tr>
+                                                ';
+                                                while ($a = $all_channels -> fetch_row()) {
+                                                    echo '
+                                                    <tr>
+                                                        <td>'.$a["1"].'</td>
+                                                        <td>'.$a["2"].'</td>
+                                                        <td> <input type="checkbox" name="channel_list[]"
+                                                                value="'.$a["0"].'"></td>
+                                                    </tr>';}
+                                                    echo '
+                                                
                                             </tbody>
                                         </table>
                                     </div>
-                                    <!-- /.card-body -->
+                                    </form>
                                 </div>
-                                <!-- /.card -->
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>
-            <!-- /.card -->
         </div>
     </div>
     <script src="jquery.min.js"></script>
     <script>
     // Show the first tab and hide the rest
-    $('#recharge li:first-child a').addClass('active');
-    $('.tab-pane').removeClass('show');
-    $('.tab-pane:first').addClass('active');
-    $('.tab-pane:first').addClass('show');
+    $("#recharge li:first-child a").addClass("active");
+    $(".tab-pane").removeClass("show");
+    $(".tab-pane:first").addClass("active");
+    $(".tab-pane:first").addClass("show");
 
-    $('#recharge li ').click(function() {
-        $('#recharge li a').removeClass('active');
-        $(this).find('a').addClass('active');
-        //    $('.tab-pane').hide();
-        $('#recharge-category div').removeClass('active');
-        $('#recharge-category div').removeClass('show');
-        var activeTab = $(this).find('a').attr('href');
-        console.log("test" + activeTab);
-        $(activeTab).addClass('show');
-        $(activeTab).addClass('active');
+    $("#recharge li ").click(function() {
+        $("#recharge li a").removeClass("active");
+        $(this).find("a").addClass("active");
+        $("#recharge-category div").removeClass("active");
+        $("#recharge-category div").removeClass("show");
+        var activeTab = $(this).find("a").attr("href");
+        $(activeTab).addClass("show");
+        $(activeTab).addClass("active");
         return false;
     });
     </script>
+
+    <script>
+function allChannelsSearch() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("allChannelsSearchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("allChannelsTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
     </script>
 </body>
 
-</html>
+</html>';
+
+    }else{
+        header("location:login.php");
+    }
+    $conn->close();
+    ?>
