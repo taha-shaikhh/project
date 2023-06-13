@@ -4,15 +4,14 @@ include "config.php";
 session_start();
 
 if($_SESSION["admin"]){
+    $uid = $conn -> real_escape_string($_GET["uid"]); 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
-        $uid = $_GET["uid"];
-        $c_name = $_POST["c_name"];
-        $vc_id = $_POST["vc_id"];
-        $mobile_no = $_POST["mobile_no"];
-        $email = $_POST["email"];
-        $address = $_POST["address"]; 
+        $c_name = $conn -> real_escape_string($_POST["c_name"]);
+        $vc_id = $conn -> real_escape_string($_POST["vc_id"]);
+        $mobile_no = $conn -> real_escape_string($_POST["mobile_no"]);
+        $email = $conn -> real_escape_string($_POST["email"]);
+        $address = $conn -> real_escape_string($_POST["address"]); 
         $sql = "UPDATE `users` SET `user_name`='$c_name', `vc_id`='$vc_id',`mobile_no`='$mobile_no',`email`='$email',`address`='$address' WHERE `user_id` = $uid";
-        $result = $conn->query($sql);
 
         if ($conn->query($sql) === TRUE) {
             echo "<p class='text-center text-success>'Record updated successfully</p>";
@@ -21,7 +20,6 @@ if($_SESSION["admin"]){
         }
 
     }
-        $uid = $_GET["uid"]; 
         $sql = "SELECT * FROM `users` WHERE `user_id` = $uid";
         $result = $conn->query($sql);
 

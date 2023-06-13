@@ -16,7 +16,7 @@
                         $vc_id = $row[2];
                         $mobile_no = $row[3];
                         $email = $row[4];
-                        $address = $row[5];
+                        $address = $row[6];
                     }
                $result -> free_result();
                 }
@@ -33,15 +33,18 @@
                     $result = $conn->store_result();
                     $row = $result -> fetch_row();
                     $last_recharge = $row[0];
-                    $date=date_create($last_recharge);
-                    $last_recharge = date_format($date,"d/m/Y");
+                    if($last_recharge){
+
+                        $date=date_create($last_recharge);
+                        $last_recharge = date_format($date,"d/m/Y");
+                    }
                     $days_left = $row[1];
                     $result->free_result();
                 }
         }
           
         $conn->close();
-        
+        $r = $recharge_details -> fetch_row();
 echo '        
 <!doctype html>
 <html lang="en">
@@ -85,7 +88,7 @@ echo '
                                 style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
                                 <img src="avator.avif" alt="Avatar" class="img-fluid my-5" style="width: 80px;" />
                                 <h5>'.$name.'</h5>
-                                <button><i class="fa-regular fa-pen-to-square"></i></button>
+                                <a class="text-white" href="editcustomerpage.php?vc='.$vc_id.'"><i class="fa-regular fa-pen-to-square"></i></a>
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body p-4">
@@ -112,7 +115,6 @@ echo '
                                             <p class="text-muted">'.$address.'</p>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -128,7 +130,7 @@ echo '
     <div class="row justify-content-around">
         
         <div class="col-6 col-md-3 text-center">
-            <input type="text" class="knob text-primary" value="'.(($days_left > 28 ? 0 : $days_left )).'" data-width="90" data-height="90" disabled>
+            <input type="text" class="knob text-primary" value="'.(($days_left > 28 || !$days_left ? 0 : $days_left )).'" data-width="90" data-height="90" disabled>
             
             <div class="text-xs knob-label font-weight-bold text-primary text-uppercase">Days Left</div>
         </div>
@@ -139,7 +141,7 @@ echo '
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                             Last Recharge on</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">'.$last_recharge.'</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">'.(($last_recharge) ? $last_recharge : (($r) ? $r[6] : "There is no rechare until now")).'</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -170,17 +172,22 @@ echo '
                 </tr>
             </thead>
             <tbody>';
-            while ($r = $recharge_details -> fetch_row()) {
-                echo '
-                <tr>
+            if($r){
+
+                do{
+                    echo '
+                    <tr>
                     <th scope="row">'.$r[2].'</th>
                     <td>'.$r[3].'</td>
                     <td>'.$r[4].'</td>
                     <td>'.$r[5].'</td>
                     <td>'.$r[6].'</td>
-                </tr>';
+                    </tr>';
+                }while ($r = $recharge_details -> fetch_row());
+            }else{
+                echo '<tr><td colspan="5">There are no recharge history</td></tr>';
             }
-            echo '
+                echo '
             </tbody>
         </table>
         </div>

@@ -4,23 +4,28 @@ include "config.php";
 session_start();
 
 if($_SESSION["admin"]){
+    $pid = $conn -> real_escape_string($_GET["pid"]); 
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         $pack_name = $conn -> real_escape_string($_POST["pack_name"]);
         $pack_price = $conn -> real_escape_string($_POST["pack_price"]);
         $type = $conn -> real_escape_string($_POST["type"]);
         $channels = $_POST["channel_list"];
         $channels = serialize($channels);
-        $sql = "INSERT INTO `packs`( `pack_name`, `pack_price`, `pack_type`, `channels`) VALUES ('$pack_name','$pack_price','$type','$channels')";
+        $sql = "UPDATE `packs` SET `pack_name`='$pack_name',`pack_price`= '$pack_price',`pack_type`= '$type',`channels`= '$channels' WHERE `pack_id` = $pid";
         if ($conn->query($sql) === TRUE) {
-                echo "<p class='text-center text-sucess'>New Pack created successfully</p>";
+                echo "<p class='text-center text-sucess'>Pack updated successfully</p>";
           } else {
                 echo "Error: " . $sql . "<br>" . $conn->error;
           }
 
     }
-    $sql = "SELECT * FROM `all_channels`";
-    $result = $conn->query($sql);
 
+    $query = "SELECT * FROM `packs` WHERE `pack_id` = $pid";
+    $pack_result = $conn->query($query);
+    $packs = $pack_result->fetch_assoc();
+    $sql = "SELECT * FROM `all_channels`";
+    $channel_result = $conn->query($sql);
+    $channels_array = unserialize($packs["channels"]);
 
 
     echo '   
@@ -50,21 +55,21 @@ if($_SESSION["admin"]){
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="pack_name">Pack Name</label>
-                                    <input type="text" class="form-control" id="pack_name" name="pack_name"
-                                    placeholder="Enter Name">
+                                    <input type="text" class="form-control" value="'.$packs["pack_name"].'" id="pack_name" name="pack_name"
+                                  >
                                 </div>
                                 <div class="form-group col-md-6">
                                     <label for="pack_price">Price</label>
-                                    <input type="text" class="form-control" id="pack_price" name="pack_price"
-                                    placeholder="Enter Price">
+                                    <input type="text" class="form-control" value="'.$packs["pack_price"].'" id="pack_price" name="pack_price"
+                                    >
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-md-6">
                                 <label for="type">Pack Type</label>
                                 <select name="type" id="type" class="form-select">
-                                  <option value="broadcast">Broadcast</option>
-                                  <option value="channels">channels</option>
+                                  <option value="broadcast" '.(($packs["pack_type"] == 'broadcast' ) ? 'selected' : ' ').'>Broadcast</option>
+                                  <option value="channels" '.(($packs["pack_type"] == 'channels' ) ? 'selected' : ' ').'>channels</option>
                                 </select>
                                 </div>
                                 </div>
@@ -94,14 +99,14 @@ if($_SESSION["admin"]){
                                             </thead>
                                             <tbody>
                                                 ';
-                                                if ($result->num_rows > 0) {
-                                                    while ($row = $result -> fetch_assoc()) {
+                                                if ($channel_result->num_rows > 0) {
+                                                    while ($row = $channel_result -> fetch_assoc()) {
                                                     echo '
                                                     <tr>
                                                         <td>'.$row["channel_name"].'</td>
                                                         <td>'.$row["price"].'</td>
                                                         <td> <input type="checkbox" name="channel_list[]"
-                                                                value="'.$row["channel_id"].'"></td>
+                                                                value="'.$row["channel_id"].'" '.((in_array($row["channel_id"],$channels_array)) ? 'checked' : ' ').'></td>
                                                     </tr>';}}
                                                     echo '
                                                 

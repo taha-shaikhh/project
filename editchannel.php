@@ -4,12 +4,11 @@ include "config.php";
 session_start();
 
 if($_SESSION["admin"]){
+    $cid = $conn -> real_escape_string($_GET["cid"]);
     if($_SERVER["REQUEST_METHOD"] == "POST"){
-        $cid = $_GET["cid"];
-        $channel_name = $_POST["channel_name"];
-        $price = $_POST["price"];
+        $channel_name = $conn -> real_escape_string($_POST["channel_name"]);
+        $price = $conn -> real_escape_string($_POST["price"]);
         $sql = "UPDATE `all_channels` SET `channel_name`='$channel_name', `price`='$price' WHERE `channel_id` = $cid";
-        $result = $conn->query($sql);
 
         if ($conn->query($sql) === TRUE) {
             echo "<p class='text-center text-success>'Record updated successfully</p>";
@@ -19,7 +18,6 @@ if($_SESSION["admin"]){
 
     }
     
-        $cid = $_GET["cid"]; 
         $sql = "SELECT * FROM `all_channels` WHERE `channel_id` = $cid";
         $result = $conn->query($sql);
 

@@ -5,8 +5,8 @@ session_start();
 
 if($_SESSION["admin"]){
     if($_SERVER["REQUEST_METHOD"] == "POST"){
-        $channel_name = $_POST["channel_name"];
-        $price = $_POST["price"];
+        $channel_name = $conn -> real_escape_string($_POST["channel_name"]);
+        $price = $conn -> real_escape_string($_POST["price"]);
         $sql = "INSERT INTO `all_channels`(`channel_name`, `price`) VALUES ('$channel_name','$price')";
         if ($conn->query($sql) === TRUE) {
             echo "<p class='text-center text-sucess'>New record created successfully</p>";
@@ -47,7 +47,7 @@ if($_SESSION["admin"]){
                                     placeholder="Enter Name">
                                 </div>
                                 <div class="form-group col-md-6">
-                                    <label for="price">VC ID</label>
+                                    <label for="price">Price</label>
                                     <input type="text" class="form-control" id="price" name="price"
                                     placeholder="Enter Price">
                                 </div>

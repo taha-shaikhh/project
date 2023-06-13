@@ -55,7 +55,7 @@ if($_SESSION["admin"]){
                                 while($row = $result->fetch_assoc()) {
                                 echo '
                                 <tr>
-                                    <td><a class="btn btn-link" href="channelsdetails.php?pid='.$row["pack_id"].'">'.$row["pack_id"].'</a></td>
+                                    <td><a class="btn btn-link" href="editpack.php?pid='.$row["pack_id"].'">'.$row["pack_id"].'</a></td>
                                     <td>'.$row["pack_name"].'</td>
                                     <td>'.$row["pack_price"].'</td>
                                     <td>'.$row["channels"].'</td>

@@ -5,12 +5,12 @@ session_start();
 
 if($_SESSION["admin"]){
     if($_SERVER["REQUEST_METHOD"] == "POST"){
-        $c_name = $_POST["c_name"];
-        $vc_id = $_POST["vc_id"];
-        $mobile_no = $_POST["mobile_no"];
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        $address = $_POST["address"]; 
+        $c_name = $conn -> real_escape_string($_POST["c_name"]);
+        $vc_id = $conn -> real_escape_string($_POST["vc_id"]);
+        $mobile_no = $conn -> real_escape_string($_POST["mobile_no"]);
+        $email = $conn -> real_escape_string($_POST["email"]);
+        $password = $conn -> real_escape_string($_POST["password"]);
+        $address = $conn -> real_escape_string($_POST["address"]); 
         $sql = "INSERT INTO `users`(`user_name`, `vc_id`, `mobile_no`, `email`, `password`, `address`) VALUES ('$c_name', '$vc_id', '$mobile_no', '$email', '$password', '$address')";
         if ($conn->query($sql) === TRUE) {
             echo "<p class='text-center text-sucess'>New record created successfully</p>";
