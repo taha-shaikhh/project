@@ -12,6 +12,7 @@
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){
         $_SESSION["vc_id"] = $row["vc_id"];
+        $_SESSION["user_name"] = $row["user_name"];
       }
       header("location:customerhomepage.php");
     }else{

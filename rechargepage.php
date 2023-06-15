@@ -3,6 +3,11 @@
 include "config.php";
 session_start();
 
+if($_SESSION["channels"]){
+    unset($_SESSION["channels"]);
+    unset($_SESSION["total_amount"]);
+}
+
 if($_SESSION["vc_id"]){
     $sql = "SELECT * FROM `packs` WHERE `pack_type` = 'Broadcast';";
     $sql .= "SELECT * FROM `packs` WHERE `pack_type` = 'Channels';";
@@ -32,7 +37,10 @@ if($_SESSION["vc_id"]){
                 }
             }
     }
-          
+    $sql = "SELECT `base_price` FROM `static_details`";
+        $result2 = $conn->query($sql);
+        $b = $result2->fetch_assoc();
+        $base_price = $b["base_price"];
 
 echo '
 <!doctype html>
@@ -85,7 +93,7 @@ echo '
 
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
-                                                <input type="text" name="table_search" class="form-control float-right"
+                                                <input type="search" name="table_search" oninput="broadcastSearch()" id="broadcastSearchInput" class="form-control float-right"
                                                     placeholder="Search">
 
                                                 <div class="input-group-append">
@@ -98,7 +106,7 @@ echo '
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap">
+                                        <table class="table table-hover text-nowrap" id="broadcastTable">
                                             <thead>
                                                 <tr>
                                                     <th>Name</th>
@@ -108,15 +116,17 @@ echo '
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <form method="post" action="">';
+                                            <form method="post" action="checkout.php">';
                                             while ($b = $broadcast_packs -> fetch_row()) {
                                                 echo '
                                                 <tr>
                                                     <td>'.$b["1"].'</td>
                                                     <td>'.$b["2"].'</td>
-                                                    <input type="hidden" name="id" value="'.$b["0"].'">
                                                     <input type="hidden" name="type" value="Broadcast">
-                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$b["0"].'&type=Broadcast"
+                                                    <input type="hidden" name="id" value="'.$b["0"].'">
+                                                    <input type="hidden" name="name" value="'.$b["1"].'">
+                                                    <input type="hidden" name="amount" value="'.$b["2"].'">
+                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$b["0"].'"
                                                         >
                                                             View Details
                                                         </a>
@@ -147,7 +157,7 @@ echo '
 
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
-                                                <input type="text" name="table_search" class="form-control float-right"
+                                                <input type="search" name="table_search" oninput="channelsPackSearch()" id="channelsPackSearchInput" class="form-control float-right"
                                                     placeholder="Search">
 
                                                 <div class="input-group-append">
@@ -160,7 +170,7 @@ echo '
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap">
+                                        <table class="table table-hover text-nowrap" id="channelsPackTable">
                                             <thead>
                                                 <tr>
                                                     <th>Name</th>
@@ -170,24 +180,28 @@ echo '
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            <form method="post" action="packdetails.php">';
+                                            ';
                                             while ($c = $channels_pack -> fetch_row()) {
                                                 echo '
+                                                <form method="post" action="checkout.php">
                                                 <tr>
                                                     <td>'.$c["1"].'</td>
                                                     <td>'.$c["2"].'</td>
                                                     <input type="hidden" name="id" value="'.$c["0"].'">
-                                                    <input type="hidden" name="type" value="channels">
-                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$c["0"].'&type=Channels"
+                                                    <input type="hidden" name="type" value="Channels">
+                                                    <input type="hidden" name="name" value="'.$c["1"].'">
+                                                    <input type="hidden" name="amount" value="'.$c["2"].'">
+                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$c["0"].'"
                                                         >
                                                             View Details
                                                         </a>
                                                     </td>
                                                     <td><button type="submit" class="btn btn-info">Recharge</button>
                                                     </td>
-                                                </tr>';}
-                                                echo '
+                                                </tr>
                                                 </form>
+                                                ';}
+                                                echo '
                                             </tbody>
                                         </table>
                                     </div>
@@ -210,7 +224,7 @@ echo '
                                         </div>
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
-                                                <input type="text" oninput="allChannelsSearch()" id="allChannelsSearchInput" name="table_search" class="form-control float-right"
+                                                <input type="search" oninput="allChannelsSearch()" id="allChannelsSearchInput" name="table_search" class="form-control float-right"
                                                     placeholder="Search">
 
                                                 <div class="input-group-append">
@@ -232,6 +246,12 @@ echo '
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            <tr>
+                                                        <td>Base Pack</td>
+                                                        <td>'.$base_price.'</td>
+                                                        <td> <input type="checkbox" name="channel_list[]" checked readonly disabled
+                                                                value=""></td>
+                                                    </tr>
                                                 ';
                                                 while ($a = $all_channels -> fetch_row()) {
                                                     echo '
@@ -276,12 +296,56 @@ echo '
     });
     </script>
 
-    <script>
+<script>
 function allChannelsSearch() {
   var input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("allChannelsSearchInput");
   filter = input.value.toUpperCase();
   table = document.getElementById("allChannelsTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+
+<script>
+function channelsPackSearch() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("channelsPackSearchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("channelsPackTable");
+  tr = table.getElementsByTagName("tr");
+
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+
+<script>
+function broadcastSearch() {
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("broadcastSearchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("broadcastTable");
   tr = table.getElementsByTagName("tr");
 
   for (i = 0; i < tr.length; i++) {

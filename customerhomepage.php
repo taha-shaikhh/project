@@ -38,13 +38,14 @@
                         $date=date_create($last_recharge);
                         $last_recharge = date_format($date,"d/m/Y");
                     }
-                    $days_left = $row[1];
+                    $days_left = (int)$row[1];
                     $result->free_result();
                 }
         }
           
         $conn->close();
         $r = $recharge_details -> fetch_row();
+
 echo '        
 <!doctype html>
 <html lang="en">
@@ -130,7 +131,7 @@ echo '
     <div class="row justify-content-around">
         
         <div class="col-6 col-md-3 text-center">
-            <input type="text" class="knob text-primary" value="'.(($days_left > 28 || !$days_left ? 0 : $days_left )).'" data-width="90" data-height="90" disabled>
+            <input type="text" class="knob '.(($days_left  < 5) ? 'text-danger' : 'text-primary').'" value="'.(($days_left == 0) ? 0 : (($days_left <= 28) ? 28-$days_left : 0) ).'" data-width="90" data-height="90" disabled>
             
             <div class="text-xs knob-label font-weight-bold text-primary text-uppercase">Days Left</div>
         </div>
@@ -220,7 +221,9 @@ echo '
         /* jQueryKnob */
         
         $(".knob").knob({
-            "readOnly": true
+            "readOnly": true,
+            "min": 0,
+            "max":28
         })
         
     })
