@@ -40,9 +40,9 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
             .gradient-custom {
-                background: #007BFF;
-                background: -webkit-linear-gradient(to right bottom, #7FBDFF, #007BFF);
-        background: linear-gradient(to right bottom, #7FBDFF, #007BFF)
+                background: #253238;
+                background: -webkit-linear-gradient(to right bottom, #3F4D5A, #253238);
+        background: linear-gradient(to right bottom, #3F4D5A, #253238)
     }
     </style>
     </head>
@@ -88,8 +88,8 @@
                 </div>
                 </div>
                 <div class="d-flex justify-content-around">
-                    <button type="submit" class="btn btn-info text-center">Update</button>
-                    <a class="btn btn-outline-info text-center" href="customerhomepage.php">Cancel</a>
+                    <button type="submit" class="btn btn-dark text-center">Update</button>
+                    <a class="btn btn-outline-dark text-center" href="customerhomepage.php">Cancel</a>
                 </div>
                 </div>
                 </div>

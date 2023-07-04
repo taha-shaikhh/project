@@ -18,7 +18,16 @@ if($_SESSION["admin"]){
             $total_user = $total[0];
         }
     }
-    $sql = "SELECT * FROM `recharge_details` ORDER BY `recharge_id` DESC";
+    $results_per_page = 12;
+    $number_of_page = ceil($number_of_result/$results_per_page);
+    if (!isset($_GET['page'])){
+      $page = 1;
+    }else{
+      $page = $_GET['page'];
+    }
+    $page_first_result = ($page -1 ) * $results_per_page;
+
+    $sql = "SELECT * FROM `recharge_details`  ORDER BY `recharge_id` DESC LIMIT ".$page_first_result.",".$results_per_page;
     $result = $conn->query($sql);
     echo '
     
@@ -112,7 +121,22 @@ if($_SESSION["admin"]){
                             }
                                 echo '
                             </tbody>
-                        </table>
+                        </table>';
+                        echo "
+                </div>
+                    <div class='container table-responsive'>
+                    <ul class='pagination justify-content-center'>
+                    <li class='page-item ".(($page == 1)? 'disabled' : '')."'><a class='page-link' href='dashboard.php?page=". (($page == 1)? '1' : $page - 1) ."'>Previous</a></li>
+                    ";
+                    for($page_no = 1; $page_no<= $number_of_page; $page_no++) {  
+                     echo " <li class='page-item ".(($page == $page_no)? "active'" : "'")."><a class='page-link' href='dashboard.php?page=". $page_no ."'>". $page_no ."</a></li>";
+                    }  
+                    echo "<li class='page-item ".(($page == $number_of_page || $number_of_result == $results_per_page)? 'disabled' : '')."'><a class='page-link' href='dashboard.php?page=". (($page == $number_of_page || $number_of_result == $results_per_page)? '' : $page + 1)."'>Next</a></li>
+                    </ul>
+                  </div>
+                ";
+                echo '
+
                     </div>
                 </div>
             </div>

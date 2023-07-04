@@ -121,6 +121,7 @@ if($_SESSION["admin"]){
 
                         <div class="card-footer text-center">
                             <button type="submit" class="btn btn-primary">Submit</button>
+                            <a class="btn btn-danger" href="delete.php?type=packs&pid='.$pid.'">Delete</a>
                         </div>
                     </form>
                 </div>

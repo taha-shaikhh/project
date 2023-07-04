@@ -1,29 +1,21 @@
 <?php 
   include "config.php";
-  session_start();
-if($_SESSION["vc_id"]){
-  header("customerhomepage.php");
-}
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $userid = $_POST["userid"];
-    $password = $_POST["password"];
-    $stmt = $conn->prepare("SELECT `user_name`, `vc_id`, `password` FROM `users` WHERE `vc_id` = ? AND `password` = ?");
-    $stmt->bind_param("ss", $userid, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if($result->num_rows > 0){
-      while($row = $result->fetch_assoc()){
-        $_SESSION["vc_id"] = $row["vc_id"];
-        $_SESSION["user_name"] = $row["user_name"];
-      }
-      header("location:customerhomepage.php");
-    }else{
-      $error = "Invalid Credentials";
+    $vc_id = $conn -> real_escape_string($_POST['vc_id']);
+    $sql = "SELECT `vc_id`,`email`,`password` FROM `users` WHERE `vc_id` = '$vc_id'";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $vc = $row["vc_id"];
+    $email = $row["email"];
+    $password = $row["password"];
+    if($vc){
+      $msg = "This is a mail containing your password of your cable account.\n\nYour password is".$password." .\n\nThis mail is only shared with you.\n\n Thanks.";
+      $msg= wordwrap($msg,70);
+      mail($email,"Forgot Password",$msg);
     }
-    $stmt->close();
-    $conn->close();
   }
+
 ?>
 
 <!doctype html>
@@ -31,7 +23,7 @@ if($_SESSION["vc_id"]){
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
+    <title>Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
   <body>
@@ -49,30 +41,26 @@ if($_SESSION["vc_id"]){
             <div class="col-md-6 col-lg-7 d-flex align-items-center">
               <div class="card-body p-4 p-lg-5 text-black">
                   
-                  <form action="" method="post">
+                  <form method="post">
                       
                       <div class="d-flex align-items-center mb-3 pb-1">
                           <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
-                    <span class="h1 fw-bold mb-0">Logo</span>
+                    <span class="h1 fw-bold mb-0">Forgot Password</span>
                   </div>
 
-                  <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Sign into your account</h5>
+                  <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">We get it, stuff happens. Just enter your VC ID below
+                                            and we'll send you your password on your email!</h5>
                   
                   <div class="form-outline mb-4">
-                      <label class="form-label" for="userid">User ID</label>
-                      <input type="text" id="userid" name="userid" class="form-control form-control-lg" />
-                  </div>
-
-                  <div class="form-outline mb-4">
-                      <label class="form-label" for="password">Password</label>
-                      <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                      <label class="form-label" for="vc_id">VC ID</label>
+                      <input type="text" id="vc_id" name="vc_id" class="form-control form-control-lg" />
                   </div>
                   <p class="text-danger"><?php echo $error ?></p>
                   <div class="pt-1 mb-4">
-                    <button class="btn btn-dark btn-lg btn-block" type="submit">Login</button>
+                    <button class="btn btn-dark btn-lg btn-block" type="submit">Submit</button>
                 </div>
                 
-                  <a class="small text-muted" href="forgotpassword.php">Forgot password?</a>
+                  <a class="small text-muted" href="login.php">Login</a>
                 </form>
 
               </div>

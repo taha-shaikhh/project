@@ -27,7 +27,7 @@ if($_SESSION["admin"]){
             $row = $result->fetch_assoc();
         }
 
- 
+        
     echo '   
     
 <div class="content-wrapper">
@@ -87,6 +87,7 @@ if($_SESSION["admin"]){
 
                         <div class="card-footer text-center">
                             <button type="submit" class="btn btn-primary">Submit</button>
+                            <a class="btn btn-danger" href="delete.php?type=user&uid='.$uid.'">Delete</a>
                         </div>
                     </form>
                 </div>

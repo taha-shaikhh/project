@@ -235,10 +235,10 @@
                 <div class="row no-print">
                   <div class="col-12">
                     <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                    <button type="button" class="btn btn-success float-right"><i class="far fa-credit-card"></i> Submit
+                    <button type="button" class="btn btn-dark float-right"><i class="far fa-credit-card"></i> Submit
                       Payment
                     </button>
-                    <a  class="btn btn-primary float-right" href="rechargepage.php" style="margin-right: 5px;">
+                    <a  class="btn btn-outline-dark float-right" href="rechargepage.php" style="margin-right: 5px;">
                       <i class="fas fa-x"></i> Cancel
                     </a>
                   </div>

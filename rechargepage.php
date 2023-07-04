@@ -126,12 +126,12 @@ echo '
                                                     <input type="hidden" name="id" value="'.$b["0"].'">
                                                     <input type="hidden" name="name" value="'.$b["1"].'">
                                                     <input type="hidden" name="amount" value="'.$b["2"].'">
-                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$b["0"].'"
+                                                    <td><a class="btn btn-link text-dark" href="packdetails.php?id='.$b["0"].'"
                                                         >
                                                             View Details
                                                         </a>
                                                     </td>
-                                                    <td><button type="submit" class="btn btn-info">Recharge</button>
+                                                    <td><button type="submit" class="btn btn-dark">Recharge</button>
                                                     </td>
                                                 </tr>';}
                                             echo '
@@ -191,12 +191,12 @@ echo '
                                                     <input type="hidden" name="type" value="Channels">
                                                     <input type="hidden" name="name" value="'.$c["1"].'">
                                                     <input type="hidden" name="amount" value="'.$c["2"].'">
-                                                    <td><a class="btn btn-link" href="packdetails.php?id='.$c["0"].'"
+                                                    <td><a class="btn btn-link text-dark" href="packdetails.php?id='.$c["0"].'"
                                                         >
                                                             View Details
                                                         </a>
                                                     </td>
-                                                    <td><button type="submit" class="btn btn-info">Recharge</button>
+                                                    <td><button type="submit" class="btn btn-dark">Recharge</button>
                                                     </td>
                                                 </tr>
                                                 </form>
@@ -220,7 +220,7 @@ echo '
                                 <form method="post" action="alacartesumup.php">
                                     <div class="card-header">
                                         <div class="text-center">
-                                            <button type="submit" class="btn btn-info">Recharge</button>
+                                            <button type="submit" class="btn btn-dark">Recharge</button>
                                         </div>
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">

@@ -6,7 +6,7 @@
     if($_SESSION["vc_id"]){
         $vc = $_SESSION["vc_id"];
         $sql = "SELECT * FROM `users` WHERE `vc_id` = $vc;";
-        $sql .= "SELECT * FROM `recharge_details` WHERE `vc_id` = '$vc' ORDER BY `recharge_id` DESC;";
+        $sql .= "SELECT * FROM `recharge_details` WHERE `vc_id` = '$vc' ORDER BY `recharge_id` DESC LIMIT 0,5;";
         $sql .= "select date, DATEDIFF(now(), date) AS diff from recharge_details where month(date)= month(now())-1 AND `vc_id` = '$vc';";
         if ($conn -> multi_query($sql)) {
               // Store first result set
@@ -62,9 +62,9 @@ echo '
         crossorigin="anonymous" referrerpolicy="no-referrer" />
         <style>
             .gradient-custom {
-        background: #007BFF;
-        background: -webkit-linear-gradient(to right bottom, #7FBDFF, #007BFF);
-        background: linear-gradient(to right bottom, #7FBDFF, #007BFF)
+        background: #253238;
+        background: -webkit-linear-gradient(to right bottom, #3F4D5A, #253238);
+        background: linear-gradient(to right bottom, #3F4D5A, #253238)
     }
     </style>
 </head>
@@ -131,16 +131,16 @@ echo '
     <div class="row justify-content-around">
         
         <div class="col-6 col-md-3 text-center">
-            <input type="text" class="knob '.(($days_left  < 5) ? 'text-danger' : 'text-primary').'" value="'.(($days_left == 0) ? 0 : (($days_left <= 28) ? 28-$days_left : 0) ).'" data-width="90" data-height="90" disabled>
+            <input type="text" class="knob '.(($days_left  < 5) ? 'text-danger' : 'text-dark').'" value="'.(($days_left == 0) ? 0 : (($days_left <= 28) ? 28-$days_left : 0) ).'" data-width="90" data-height="90" disabled>
             
-            <div class="text-xs knob-label font-weight-bold text-primary text-uppercase">Days Left</div>
+            <div class="text-xs knob-label font-weight-bold text-dark text-uppercase">Days Left</div>
         </div>
 
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card-body ">
                 <div class="row no-gutters align-items-center callout callout-info">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
                             Last Recharge on</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">'.(($last_recharge) ? $last_recharge : (($r) ? $r[6] : "There is no rechare until now")).'</div>
                         </div>
@@ -155,7 +155,7 @@ echo '
         
     <div class="row">
         <div class="col-md-2 m-auto">
-            <a href="rechargepage.php" class="btn btn-block btn-outline-primary btn-flat mb-4">Recharge Now</a>
+            <a href="rechargepage.php" class="btn btn-block btn-outline-dark btn-flat mb-4">Recharge Now</a>
         </div>
     </div>
     
@@ -193,22 +193,6 @@ echo '
         </table>
         </div>
     </div>
-    <nav aria-label="...">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">Previous</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
 </script>

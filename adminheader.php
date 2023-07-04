@@ -17,7 +17,13 @@ echo '
 </head>
 
 <body>
-    
+<nav>
+<ul class="navbar-nav">
+<li class="nav-item">
+    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fa-solid fa-bars"></i></a>
+</li>
+</ul>
+</nav>    
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     
 <!-- Sidebar -->
@@ -113,10 +119,12 @@ echo '
                             </a>
                         </li>
                     </ul>
-                </nav>
-        </div>
-    </aside>
+                    </nav>
+                    </div>
+                    </aside>
+
     <script src="jquery.min.js"></script>
+    <script src="adminlte.js"></script>
     <script>
         $("#users").click(function() {
         $("#userslist").toggle();
