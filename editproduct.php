@@ -48,7 +48,7 @@ if($_SESSION["user"] == "admin"){
                     </div>
                   </div>
               <div class='text-center'>
-                <button type='submit' name='submit' class='btn btn-primary'>Submit</button>
+                <button type='submit' class='btn btn-primary'>Submit</button>
               </div>
             </form>
           </div>

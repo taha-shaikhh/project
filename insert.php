@@ -4,32 +4,35 @@ include 'conn.php';
 error_reporting(E_ALL);
 if($_SESSION["user"] == "admin"){
     if(isset($_POST['name'])){
+      $query = '';
       $pid = $_POST['pid'];
       $name= $_POST['name'];
       $price= $_POST['price'];
+      $previmagename= $_POST['imagename'];
+      
       $desc= $_POST['desc'];
       $name = mysqli_real_escape_string($conn,$name);
       $price = mysqli_real_escape_string($conn,$price);
       $desc = mysqli_real_escape_string($conn,$desc);
-      if(isset($_FILES['image'])){
-
-        $file = $_FILES['image']['tmp_name'];
-        $folder = getcwd().DIRECTORY_SEPARATOR;
-        $path = $folder . $image_file;  
-        $target_file=$folder.basename($image_file);
-        $imageFileType=pathinfo($target_file,PATHINFO_EXTENSION);
+      if(is_uploaded_file($_FILES['image']['tmp_name'])){
+        $targetDir = getcwd().DIRECTORY_SEPARATOR;
         $fileName = basename($_FILES["image"]["name"]);
+        $targetFilePath = $targetDir ."/".$fileName;
         if(move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)){
-          $query = "UPDATE `product` SET `name`=$name,`price`=$price,`image`=$fileName,`description`= $desc WHERE `pid` = $pid";
-        }
+            unlink($previmagename);
+            $query = "UPDATE `product` SET `name`='$name',`price`='$price',`image`='$fileName',`description`= '$desc' WHERE `pid` = '$pid'";
+          }
       }
       else{
-        $query = "UPDATE `product` SET `name`=$name,`price`=$price,`description`= $desc WHERE `pid` = $pid";
+        $query = "UPDATE `product` SET `name`='$name',`price`='$price',`description`= '$desc' WHERE `pid` = '$pid'";
       }
-      if (mysqli_query($conn, $query)) {
-        header("location:admin.php");
-      } else {
-        echo "Error updating record: " . mysqli_error($conn);
+      if($query!=''){
+
+        if (mysqli_query($conn, $query)) {
+          header("location:admin.php");
+        } else {
+          echo "Error updating record: " . mysqli_error($conn);
+        }
       }
     }
     $pid = $_GET['pid'];
@@ -50,7 +53,7 @@ if($_SESSION["user"] == "admin"){
         <body>
       <div class='container col-sm-6'>
       <h1 class='text-center mb-2 fw-semibold'>Edit Details</h1>
-      <form action='' method='post'>
+      <form action='' method='post' enctype='multipart/form-data'>
       <div class='container text-center'>
               <div class='row mt-2'>
                     <div class='col-sm-4'>
@@ -90,6 +93,7 @@ if($_SESSION["user"] == "admin"){
                       </div>
                       <div class='col-sm-8'>
                       <img src='".$row['image']."' width='200' height='400'>
+                      <input type='hidden' name='imagename' value='".$row['image']."'>
                       <input class='form-control' type='file' name='image'>
                       </div>
                     </div>
