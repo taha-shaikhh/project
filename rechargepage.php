@@ -150,9 +150,13 @@ echo '
 
                     <div class="tab-pane fade" id="channel-packs" role="tabpanel" aria-labelledby="channel-packs-tab">
                         <div class="row">
-                            <div class="col-12">
-                                <div class="card">
+                        <div class="col-12">
+                        <div class="card">
+                            <form method="post" action="alacartesumup.php?type=channelsPack">
                                     <div class="card-header">
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-dark">Recharge</button>
+                                    </div>
                                         <h3 class="card-title">Channels Pack Table</h3>
 
                                         <div class="card-tools">
@@ -180,34 +184,38 @@ echo '
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                            <tr>
+                                                        <td>Base Pack</td>
+                                                        <td>'.$base_price.'</td>
+                                                        <td>Default Pack
+                                                    </td>
+                                                        <td> <input type="checkbox" name="channelpack_list[]" checked readonly disabled
+                                                            ></td>
+                                                    </tr>
                                             ';
                                             while ($c = $channels_pack -> fetch_row()) {
                                                 echo '
-                                                <form method="post" action="checkout.php">
                                                 <tr>
                                                     <td>'.$c["1"].'</td>
                                                     <td>'.$c["2"].'</td>
-                                                    <input type="hidden" name="id" value="'.$c["0"].'">
                                                     <input type="hidden" name="type" value="Channels">
-                                                    <input type="hidden" name="name" value="'.$c["1"].'">
-                                                    <input type="hidden" name="amount" value="'.$c["2"].'">
                                                     <td><a class="btn btn-link text-dark" href="packdetails.php?id='.$c["0"].'"
                                                         >
                                                             View Details
                                                         </a>
                                                     </td>
-                                                    <td><button type="submit" class="btn btn-dark">Recharge</button>
-                                                    </td>
+                                                    <td> <input type="checkbox" name="channel_list[]"
+                                                                value="'.$c["0"].'"></td>
                                                 </tr>
-                                                </form>
                                                 ';}
                                                 echo '
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <!-- /.card-body -->
                                     </div>
-                                    <!-- /.card-body -->
-                                </div>
-                                <!-- /.card -->
+                                    <!-- /.card -->
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -217,7 +225,7 @@ echo '
                         <div class="row">
                             <div class="col-12">
                                 <div class="card">
-                                <form method="post" action="alacartesumup.php">
+                                <form method="post" action="alacartesumup.php?type=allChannels">
                                     <div class="card-header">
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-dark">Recharge</button>

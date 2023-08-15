@@ -1,5 +1,6 @@
 <?php
     include "config.php";
+    include "credentials.php";
     session_start();
     if($_SESSION["vc_id"]){
         echo '
@@ -39,6 +40,7 @@
   
               <!-- Main content -->
               <div class="invoice p-3 mb-3">
+              <form>
                 <!-- title row -->
                 <div class="row">
                   <div class="col-12">
@@ -54,7 +56,13 @@
                   $pack_details = $_POST["type"];
                   $total_amount = $_POST["amount"];
                   $pack_name = $_POST["name"];
+                  $_SESSION["channels"]["name0"] = $pack_name;
+                  $_SESSION["channels"]["price0"] = $total_amount;
                   echo '
+                  <input type="hidden" name="pack_id" value="'.$pack_id.'">
+                  <input type="hidden" name="rechare_type" value="'.$pack_details.'">
+                  <input type="hidden" name="total_amount" value="'.$total_amount.'">
+                  <input type="hidden" name="pack_name" value="'.$pack_name.'">
                   <div class="row">
                   <div class="col-12 table-responsive">
                     <table class="table table-striped">
@@ -79,7 +87,7 @@
                 <!-- accepted payments column -->
                 <div class="col-6">
                   <p class="lead">Payment Methods:</p>
-                  <img src=".https://www.ecommerce-nation.com/wp-content/uploads/2019/02/razorpay.webp" alt="Razorpay">
+                  <img src="https://www.ecommerce-nation.com/wp-content/uploads/2019/02/razorpay.webp" width="100" heigth="100" alt="Razorpay">
 
                   <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                     Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem
@@ -100,15 +108,9 @@
                 </div>
               </div>
                   ';
-                } elseif($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["type"] == "Channels"){
-                  $pack_id = $_POST["id"];
-                  $pack_details = $_POST["type"];
-                  $amount = $_POST["amount"];
-                  $pack_name = $_POST["name"];
-                  $channels_query = "SELECT `base_price` FROM `static_details` ";
-                  $base_pack = $conn->query($channels_query);
-                  $b = $base_pack->fetch_assoc();
-                  $total_amount = $b["base_price"] + $amount;
+                } elseif(str_contains($_SERVER['HTTP_REFERER'],"rechargepage") && $_GET["type"] == "channelpack"){
+                 
+                
                   echo '
                   <div class="row">
                   <div class="col-12 table-responsive">
@@ -119,15 +121,17 @@
                         <th>Price (&#8377;)</th>
                       </tr>
                       </thead>
-                      <tbody>
+                      <tbody>';
+                      $count  = count($_SESSION["channels"])/2;
+                      $total_amount = $_SESSION["total_amount"];
+                      for ($i=0; $i < $count; $i++) {
+                      echo '
                       <tr>
-                        <td>Base Pack</td>
-                        <td> &#8377; '.$b["base_price"].'</td>
-                      </tr>
-                      <tr>
-                        <td>'.$pack_name.'</td>
-                        <td> &#8377; '.$amount.'</td>
-                      </tr>
+                        <td>'.$_SESSION["channels"]["name".$i].'</td>
+                        <td> &#8377; '.$_SESSION["channels"]["price".$i].'</td>
+                      </tr>';
+                      };
+                      echo '
                       </tbody>
                     </table>
                   </div>
@@ -159,7 +163,7 @@
                 </div>
               </div>
                   ';
-                }elseif(str_contains($_SERVER['HTTP_REFERER'],"rechargepage")){
+                }elseif(str_contains($_SERVER['HTTP_REFERER'],"rechargepage") && $_GET["type"] == "all"){
           
                 echo '
                 <div class="row">
@@ -235,7 +239,7 @@
                 <div class="row no-print">
                   <div class="col-12">
                     <a href="invoice-print.html" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>
-                    <button type="button" class="btn btn-dark float-right"><i class="far fa-credit-card"></i> Submit
+                    <button type="button" id="paymentButton" class="btn btn-dark float-right"><i class="far fa-credit-card"></i> Submit
                       Payment
                     </button>
                     <a  class="btn btn-outline-dark float-right" href="rechargepage.php" style="margin-right: 5px;">
@@ -245,10 +249,50 @@
                 </div>
               </div>
               <!-- /.invoice -->
+              </form>
             </div><!-- /.col -->
           </div><!-- /.row -->
         </div><!-- /.container-fluid -->
       </section>
+      <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+      <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+      <script>
+          const cashfree = Cashfree({
+            mode:"sandbox" //or production
+          });
+          const paymentButton = document.getElementById("paymentButton");
+          paymentButton.addEventListener("click", function () {
+
+            $.ajax({
+              type: "POST",
+              url: "fetchSessionId.php",
+              data : {amount : '.$total_amount.'},
+                success: function(response)
+                {
+                  console.log(response["success"]["payment_session_id"]);
+                  if(response["success"]){
+                    const sessionID = response["success"]["payment_session_id"];
+                    let checkoutOptions = {
+                      paymentSessionId: sessionID,
+                      returnUrl: '.$return_url.',
+                      
+                    }
+                    cashfree.checkout(checkoutOptions).then(function(result){
+                      if(result.error){
+                        alert(result.error.message)
+                      }
+                      if(result.redirect){
+                        console.log("Redirection")
+                      }
+                    });
+                  }else{
+                    alert("There is some problem at the payment gateway");  
+                  }
+                }
+              });
+
+          });
+      </script>
       </body>
       </html>';   
     }
