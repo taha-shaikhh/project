@@ -1,11 +1,15 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 if($_SESSION["admin"]){
-    $sql = "SELECT * FROM `packs` WHERE `pack_type` = 'BroadCast'";
+    $sql = "SELECT p.*, GROUP_CONCAT(c.channel_name SEPARATOR ', ') AS channel_names
+    FROM `packs` p
+    LEFT JOIN `all_channels` c ON FIND_IN_SET(c.channel_id, p.channels) > 0
+    WHERE p.`pack_type` IN ('broadcast')
+    GROUP BY p.pack_id;";
     $result = $conn->query($sql);
-
+    // $query2 = "SELECT * FROM `all_channels`";
+    // $result2 = $conn->query($query2);
     echo '
 
     
@@ -58,7 +62,7 @@ if($_SESSION["admin"]){
                                     <td><a class="btn btn-link" href="editpack.php?pid='.$row["pack_id"].'">'.$row["pack_id"].'</a></td>
                                     <td>'.$row["pack_name"].'</td>
                                     <td>'.$row["pack_price"].'</td>
-                                    <td>'.$row["channels"].'</td>
+                                    <td>'.$row["channel_names"].'</td>
                                 </tr>';
                                 }}
                                 echo '

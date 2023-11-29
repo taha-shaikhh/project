@@ -1,15 +1,13 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 
 if($_SESSION["admin"]){
     if($_SERVER["REQUEST_METHOD"] == "POST"){
         $pack_name = $conn -> real_escape_string($_POST["pack_name"]);
         $pack_price = $conn -> real_escape_string($_POST["pack_price"]);
         $type = $conn -> real_escape_string($_POST["type"]);
-        $channels = $_POST["channel_list"];
-        $channels = serialize($channels);
+        $channels = implode(',',$_POST["channel_list"]);
         $sql = "INSERT INTO `packs`( `pack_name`, `pack_price`, `pack_type`, `channels`) VALUES ('$pack_name','$pack_price','$type','$channels')";
         if ($conn->query($sql) === TRUE) {
                 echo "<p class='text-center text-sucess'>New Pack created successfully</p>";

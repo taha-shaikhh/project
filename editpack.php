@@ -1,7 +1,6 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 
 if($_SESSION["admin"]){
     $pid = $conn -> real_escape_string($_GET["pid"]); 
@@ -9,8 +8,7 @@ if($_SESSION["admin"]){
         $pack_name = $conn -> real_escape_string($_POST["pack_name"]);
         $pack_price = $conn -> real_escape_string($_POST["pack_price"]);
         $type = $conn -> real_escape_string($_POST["type"]);
-        $channels = $_POST["channel_list"];
-        $channels = serialize($channels);
+        $channels = implode(',',$_POST["channel_list"]);
         $sql = "UPDATE `packs` SET `pack_name`='$pack_name',`pack_price`= '$pack_price',`pack_type`= '$type',`channels`= '$channels' WHERE `pack_id` = $pid";
         if ($conn->query($sql) === TRUE) {
                 echo "<p class='text-center text-sucess'>Pack updated successfully</p>";
@@ -25,7 +23,7 @@ if($_SESSION["admin"]){
     $packs = $pack_result->fetch_assoc();
     $sql = "SELECT * FROM `all_channels`";
     $channel_result = $conn->query($sql);
-    $channels_array = unserialize($packs["channels"]);
+    $channels_array = explode(",",$packs["channels"]);
 
 
     echo '   

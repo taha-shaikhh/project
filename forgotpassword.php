@@ -2,20 +2,45 @@
   include "config.php";
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $vc_id = $conn -> real_escape_string($_POST['vc_id']);
-    $sql = "SELECT `vc_id`,`email`,`password` FROM `users` WHERE `vc_id` = '$vc_id'";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $vc = $row["vc_id"];
-    $email = $row["email"];
-    $password = $row["password"];
-    if($vc){
-      $msg = "This is a mail containing your password of your cable account.\n\nYour password is".$password." .\n\nThis mail is only shared with you.\n\n Thanks.";
-      $msg= wordwrap($msg,70);
-      mail($email,"Forgot Password",$msg);
-    }
-  }
 
+    $vc_id = $_POST["vc_id"];
+    $token = bin2hex(random_bytes(16));
+    $token_hash = hash("sha256", $token);
+    date_default_timezone_set("Asia/Calcutta");
+    $expiry = date("Y-m-d H:i:s", time() + 60 * 10);
+
+
+    $sql = "UPDATE users
+        SET reset_token_hash = ?,
+            reset_token_expires_at = ?
+        WHERE vc_id = ?";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->bind_param("sss", $token_hash, $expiry, $vc_id);
+
+    $stmt->execute();
+    if ($conn->affected_rows) {
+      $error = "Password reset link have been sent to your registered email";
+      echo 'Click <a href="'.$base_url.'reset-password.php?token='.$token.'">here</a> 
+      to reset your password.';
+    }
+
+    // $vc_id = $conn -> real_escape_string($_POST['vc_id']);
+    // $sql = "SELECT `vc_id`,`email`,`password` FROM `users` WHERE `vc_id` = '$vc_id'";
+    // $result = $conn->query($sql);
+    // $row = $result->fetch_assoc();
+    // $vc = $row["vc_id"];
+    // $email = $row["email"];
+    // $password = $row["password"];
+    // if($vc){
+    //   $msg = "This is a mail containing your password of your cable account.\n\nYour password is".$password." .\n\nThis mail is only shared with you.\n\n Thanks.";
+    //   $msg= wordwrap($msg,70);
+    //   mail($email,"Forgot Password",$msg);
+    // }
+
+  }
+$conn->close();
 ?>
 
 <!doctype html>
@@ -23,7 +48,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Password</title>
+    <title>Forgot Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
   </head>
   <body>
@@ -53,7 +78,7 @@
                   
                   <div class="form-outline mb-4">
                       <label class="form-label" for="vc_id">VC ID</label>
-                      <input type="text" id="vc_id" name="vc_id" class="form-control form-control-lg" />
+                      <input type="text" id="vc_id" name="vc_id" class="form-control form-control-lg" required/>
                   </div>
                   <p class="text-danger"><?php echo $error ?></p>
                   <div class="pt-1 mb-4">
@@ -71,7 +96,6 @@
     </div>
 </div>
 </section>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 </body>
 </html>

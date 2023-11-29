@@ -1,7 +1,6 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 
 if($_SESSION["admin"]){
     if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -9,9 +8,8 @@ if($_SESSION["admin"]){
         $vc_id = $conn -> real_escape_string($_POST["vc_id"]);
         $mobile_no = $conn -> real_escape_string($_POST["mobile_no"]);
         $email = $conn -> real_escape_string($_POST["email"]);
-        $password = $conn -> real_escape_string($_POST["password"]);
         $address = $conn -> real_escape_string($_POST["address"]); 
-        $sql = "INSERT INTO `users`(`user_name`, `vc_id`, `mobile_no`, `email`, `password`, `address`) VALUES ('$c_name', '$vc_id', '$mobile_no', '$email', '$password', '$address')";
+        $sql = "INSERT INTO `users`(`user_name`, `vc_id`, `mobile_no`, `email`, `address`) VALUES ('$c_name', '$vc_id', '$mobile_no', '$email', '$address')";
         if ($conn->query($sql) === TRUE) {
             echo "<p class='text-center text-sucess'>New record created successfully</p>";
           } else {
@@ -59,7 +57,7 @@ if($_SESSION["admin"]){
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="mobile_no">Mobile No</label>
-                                    <input type="tel" class="form-control" maxlength="10" id="mobile_no" name="mobile_no"
+                                    <input type="tel" class="form-control" maxlength="10" minlength="10" id="mobile_no" name="mobile_no"
                                     placeholder="Enter Mobile no">
                                 </div>
                                 <div class="form-group col-md-6">
@@ -69,11 +67,6 @@ if($_SESSION["admin"]){
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-6">
-                                    <label for="password">Password</label>
-                                    <input type="text" class="form-control" id="password" name="password"
-                                    placeholder="Enter Password">
-                                </div>
                                 <div class="form-group col-md-6">
                                     <label for="address">Address</label>
                                     <input type="text" class="form-control" id="address" name="address"

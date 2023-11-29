@@ -4,7 +4,6 @@
   if($_SERVER["REQUEST_METHOD"] == "POST"){
     $userid = $_POST["userid"];
     $password = $_POST["password"];
-    echo "hello";
     if($password == "admin" and $userid == "admin"){
       $_SESSION["admin"] = "admin";
       header("location:dashboard.php");

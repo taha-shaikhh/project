@@ -2,8 +2,9 @@
 
 $servername = "localhost";
 $username = "root";
-$password = "root";
+$password = "";
 $dbname = "acv";
+$base_url = "localhost/";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {

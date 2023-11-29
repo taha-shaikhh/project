@@ -1,7 +1,6 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 if($_SESSION["admin"]){
     $sql = "SELECT * FROM `all_channels`";
     $result = $conn->query($sql);

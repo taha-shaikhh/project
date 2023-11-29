@@ -1,7 +1,6 @@
 <?php
 include "adminheader.php";
 include "config.php";
-session_start();
 if($_SESSION["admin"]){
     $sql = "SELECT COUNT(date) FROM recharge_details WHERE month(date)= month(now())-1;SELECT COUNT(vc_id) FROM `users`;";
     if ($conn -> multi_query($sql)) {
@@ -19,16 +18,17 @@ if($_SESSION["admin"]){
         }
     }
     $results_per_page = 12;
-    $number_of_page = ceil($number_of_result/$results_per_page);
     if (!isset($_GET['page'])){
-      $page = 1;
+        $page = 1;
     }else{
-      $page = $_GET['page'];
+        $page = $_GET['page'];
     }
     $page_first_result = ($page -1 ) * $results_per_page;
-
+    
     $sql = "SELECT * FROM `recharge_details`  ORDER BY `recharge_id` DESC LIMIT ".$page_first_result.",".$results_per_page;
     $result = $conn->query($sql);
+    $number_of_result = mysqli_num_rows($result);
+    $number_of_page = ceil($number_of_result/$results_per_page);
     echo '
     
     <div class="content-wrapper">

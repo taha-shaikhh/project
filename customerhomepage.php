@@ -3,19 +3,22 @@
     include "config.php";
     session_start();
 
+    if(isset($_SESSION["page"])){
+        unset($_SESSION["page"]);
+      }
     if($_SESSION["vc_id"]){
         $vc = $_SESSION["vc_id"];
         $sql = "SELECT * FROM `users` WHERE `vc_id` = $vc;";
         $sql .= "SELECT * FROM `recharge_details` WHERE `vc_id` = '$vc' ORDER BY `recharge_id` DESC LIMIT 0,5;";
-        $sql .= "select date, DATEDIFF(now(), date) AS diff from recharge_details where month(date)= month(now())-1 AND `vc_id` = '$vc';";
+        $sql .= "SELECT date, DATEDIFF(NOW(), date) AS diff FROM recharge_details WHERE date >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND vc_id = '$vc';";
         if ($conn -> multi_query($sql)) {
               // Store first result set
               if ($result = $conn -> store_result()) {
                     while ($row = $result -> fetch_row()) {
                         $name = $row[1];
                         $vc_id = $row[2];
-                        $mobile_no = $row[3];
-                        $email = $row[4];
+                        $mobile_no = $row[4];
+                        $email = $row[5];
                         $address = $row[6];
                     }
                $result -> free_result();
@@ -131,7 +134,7 @@ echo '
     <div class="row justify-content-around">
         
         <div class="col-6 col-md-3 text-center">
-            <input type="text" class="knob '.(($days_left  < 5) ? 'text-danger' : 'text-dark').'" value="'.(($days_left == 0) ? 0 : (($days_left <= 28) ? 28-$days_left : 0) ).'" data-width="90" data-height="90" disabled>
+            <input type="text" class="knob '.(($days_left  < 5) ? 'text-danger' : 'text-dark').'" value="'.(($days_left <= 30 && $days_left > 0) ? 30-$days_left : 0) .'" data-width="90" data-height="90" disabled>
             
             <div class="text-xs knob-label font-weight-bold text-dark text-uppercase">Days Left</div>
         </div>
@@ -207,7 +210,7 @@ echo '
         $(".knob").knob({
             "readOnly": true,
             "min": 0,
-            "max":28
+            "max":30
         })
         
     })
@@ -218,5 +221,4 @@ $recharge_details->free_result();
 }else{
     header("location:login.php");
 }
-$conn->close();
 ?>

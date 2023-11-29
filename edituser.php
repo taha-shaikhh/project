@@ -67,7 +67,7 @@ if($_SESSION["admin"]){
                             <div class="row">
                                 <div class="form-group col-md-6">
                                     <label for="mobile_no">Mobile No</label>
-                                    <input type="tel" class="form-control" maxlength="10" id="mobile_no" name="mobile_no" value="'.$row["mobile_no"].'"
+                                    <input type="tel" class="form-control" maxlength="10" minlength="10" id="mobile_no" name="mobile_no" value="'.$row["mobile_no"].'"
                                     >
                                 </div>
                                 <div class="form-group col-md-6">

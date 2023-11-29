@@ -1,8 +1,8 @@
 <?php
-    include "config.php";
     include "credentials.php";
     session_start();
     if($_SESSION["vc_id"]){
+      $_SESSION["page"] = 'Payment Gateway';
         echo '
         <!doctype html>
 <html lang="en">
@@ -51,16 +51,11 @@
                   </div>
                   <!-- /.col -->
                 </div>';
-                if($_SERVER["REQUEST_METHOD"] == "POST" && $_POST["type"] == "Broadcast"){
-                  $pack_id = $_POST["id"];
-                  $pack_details = $_POST["type"];
-                  $total_amount = $_POST["amount"];
-                  $pack_name = $_POST["name"];
-                  $_SESSION["channels"]["name0"] = $pack_name;
-                  $_SESSION["channels"]["price0"] = $total_amount;
+                if($_GET["type"] == "Broadcast"){
+                  $total_amount = $_GET["price"];
+                  $pack_name = $_GET["pack"];
+                  $details = $pack_name;
                   echo '
-                  <input type="hidden" name="pack_id" value="'.$pack_id.'">
-                  <input type="hidden" name="rechare_type" value="'.$pack_details.'">
                   <input type="hidden" name="total_amount" value="'.$total_amount.'">
                   <input type="hidden" name="pack_name" value="'.$pack_name.'">
                   <div class="row">
@@ -122,14 +117,16 @@
                       </tr>
                       </thead>
                       <tbody>';
-                      $count  = count($_SESSION["channels"])/2;
+                      $count  = $_SESSION["count"];
                       $total_amount = $_SESSION["total_amount"];
-                      for ($i=0; $i < $count; $i++) {
-                      echo '
-                      <tr>
-                        <td>'.$_SESSION["channels"]["name".$i].'</td>
-                        <td> &#8377; '.$_SESSION["channels"]["price".$i].'</td>
-                      </tr>';
+                      $details = "";
+                      for ($i=0; $i <= $count; $i++) {
+                        echo '
+                        <tr>
+                        <td>'.$_SESSION["channelsname".$i].'</td>
+                        <td> &#8377; '.$_SESSION["channelsprice".$i].'</td>
+                        </tr>';
+                        $details .= $_SESSION["channelsname".$i].", ";
                       };
                       echo '
                       </tbody>
@@ -142,7 +139,7 @@
                 <!-- accepted payments column -->
                 <div class="col-6">
                   <p class="lead">Payment Methods:</p>
-                  <img src=".https://www.ecommerce-nation.com/wp-content/uploads/2019/02/razorpay.webp" alt="Razorpay">
+                  <img src="https://www.ecommerce-nation.com/wp-content/uploads/2019/02/razorpay.webp" alt="Razorpay">
 
                   <p class="text-muted well well-sm shadow-none" style="margin-top: 10px;">
                     Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem
@@ -163,8 +160,7 @@
                 </div>
               </div>
                   ';
-                }elseif(str_contains($_SERVER['HTTP_REFERER'],"rechargepage") && $_GET["type"] == "all"){
-          
+                }elseif(str_contains($_SERVER['HTTP_REFERER'],"rechargepage") && $_GET["type"] == "all"){   
                 echo '
                 <div class="row">
                   <div class="col-12 table-responsive">
@@ -180,13 +176,14 @@
                       $subtotal_amount = $_SESSION["total_amount"];
                       $tax = ($subtotal_amount *18) /100;
                       $total_amount = $subtotal_amount + $tax + 20;
-
+                      $details = "";
                       for ($i=0; $i < $count; $i++) {
                       echo '
                       <tr>
                         <td>'.$_SESSION["channels"]["name".$i].'</td>
                         <td> &#8377; '.$_SESSION["channels"]["price".$i].'</td>
                       </tr>';
+                      $details .= $_SESSION["channels"]["name".$i].", ";
                       }
                       echo '
                       </tbody>
@@ -220,7 +217,7 @@
                           <td> &#8377;'. $tax.'</td>
                         </tr>
                         <tr>
-                          <th>Shipping:</th>
+                          <th>Service Charge:</th>
                           <td>&#8377; 20</td>
                         </tr>
                         <tr>
@@ -262,7 +259,7 @@
           });
           const paymentButton = document.getElementById("paymentButton");
           paymentButton.addEventListener("click", function () {
-
+            console.log("button clicked")
             $.ajax({
               type: "POST",
               url: "fetchSessionId.php",
@@ -274,7 +271,7 @@
                     const sessionID = response["success"]["payment_session_id"];
                     let checkoutOptions = {
                       paymentSessionId: sessionID,
-                      returnUrl: '.$return_url.',
+                      returnUrl: "'.$return_url.'&details='.$details.'",
                       
                     }
                     cashfree.checkout(checkoutOptions).then(function(result){
@@ -295,5 +292,7 @@
       </script>
       </body>
       </html>';   
+    }else{
+      header("location:login.php");
     }
 ?>

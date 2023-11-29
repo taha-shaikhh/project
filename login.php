@@ -1,25 +1,31 @@
 <?php 
   include "config.php";
   session_start();
+
+  if(isset($_SESSION["page"])){
+    unset($_SESSION["page"]);
+  }
+
 if($_SESSION["vc_id"]){
   header("customerhomepage.php");
 }
 
   if($_SERVER["REQUEST_METHOD"] == "POST"){
     $userid = $_POST["userid"];
-    $password = $_POST["password"];
-    $stmt = $conn->prepare("SELECT `user_name`, `vc_id`, `password` FROM `users` WHERE `vc_id` = ? AND `password` = ?");
-    $stmt->bind_param("ss", $userid, $password);
+    $stmt = $conn->prepare("SELECT `user_name`, `vc_id`, `password` FROM `users` WHERE `vc_id` = ?");
+    $stmt->bind_param("s", $userid);
     $stmt->execute();
     $result = $stmt->get_result();
     if($result->num_rows > 0){
       while($row = $result->fetch_assoc()){
-        $_SESSION["vc_id"] = $row["vc_id"];
-        $_SESSION["user_name"] = $row["user_name"];
+        if (password_verify($_POST["password"], $row["password"])) {
+          $_SESSION["vc_id"] = $row["vc_id"];
+          $_SESSION["user_name"] = $row["user_name"];
+        }
       }
       header("location:customerhomepage.php");
     }else{
-      $error = "Invalid Credentials";
+      $error = "Invalid Credentials".password_hash("test1234",PASSWORD_DEFAULT);
     }
     $stmt->close();
     $conn->close();
@@ -60,12 +66,12 @@ if($_SESSION["vc_id"]){
                   
                   <div class="form-outline mb-4">
                       <label class="form-label" for="userid">User ID</label>
-                      <input type="text" id="userid" name="userid" class="form-control form-control-lg" />
+                      <input type="text" id="userid" name="userid" class="form-control form-control-lg" required/>
                   </div>
 
                   <div class="form-outline mb-4">
                       <label class="form-label" for="password">Password</label>
-                      <input type="password" id="password" name="password" class="form-control form-control-lg" />
+                      <input type="password" id="password" name="password" minlength="8" class="form-control form-control-lg" required/>
                   </div>
                   <p class="text-danger"><?php echo $error ?></p>
                   <div class="pt-1 mb-4">

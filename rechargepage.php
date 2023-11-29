@@ -1,48 +1,67 @@
-<?php 
-
+<?php
 include "config.php";
 session_start();
 
-if($_SESSION["channels"]){
+if(isset($_SESSION["page"])){
+    unset($_SESSION["page"]);
+}
+
+if (isset($_SESSION["channels"])) {
     unset($_SESSION["channels"]);
     unset($_SESSION["total_amount"]);
 }
 
-if($_SESSION["vc_id"]){
-    $sql = "SELECT * FROM `packs` WHERE `pack_type` = 'Broadcast';";
-    $sql .= "SELECT * FROM `packs` WHERE `pack_type` = 'Channels';";
+if ($_SESSION["vc_id"]) {
+    $sql = "SELECT p.*, GROUP_CONCAT(c.channel_name SEPARATOR ', ') AS channel_names
+            FROM `packs` p
+            LEFT JOIN `all_channels` c ON FIND_IN_SET(c.channel_id, p.channels) > 0
+            WHERE p.`pack_type` IN ('broadcast', 'channels')
+            GROUP BY p.pack_id;";
+
     $sql .= "SELECT * FROM `all_channels`;";
-    if ($conn -> multi_query($sql)) {
 
-        $broadcast_packs = $conn -> store_result(); 
+    if ($conn->multi_query($sql)) {
+        $result = $conn->store_result();
+        $conn->next_result();
+        $allChannelsResult = $conn->store_result();
 
-        if($conn -> more_results()){
-            $conn->next_result();
-            $channels_pack = $conn->store_result();   
-        }
+        $data = [
+            'broadcast_packs' => [],
+            'channels_pack' => [],
+            'all_channels' => [],
+            'base_price' => 0,
+        ];
 
+        while ($row = $result->fetch_assoc()) {
+            $row['channels'] = explode(', ', $row['channel_names']);
+            unset($row['channel_names']);
 
-        if($conn -> more_results()){
-            $conn->next_result();
-            $all_channels = $conn->store_result();   
-        }
-
-        if ($result = $conn -> store_result()) {
-                while ($row = $result -> fetch_row()) {
-                    $name = $row[1];
-                    $vc_id = $row[2];
-                    $mobile_no = $row[3];
-                    $email = $row[4];
-                    $address = $row[5];
-                }
+            if ($row['pack_type'] == 'broadcast') {
+                $data['broadcast_packs'][] = $row;
+            } else {
+                $data['channels_pack'][] = $row;
             }
-    }
-    $sql = "SELECT `base_price` FROM `static_details`";
+        }
+
+        while ($row = $allChannelsResult->fetch_assoc()) {
+            $data['all_channels'][] = $row;
+        }
+
+        $sql = "SELECT `base_price` FROM `static_details`";
         $result2 = $conn->query($sql);
         $b = $result2->fetch_assoc();
-        $base_price = $b["base_price"];
+        $data['base_price'] = $b["base_price"];
 
-echo '
+        $json_data = json_encode($data);
+    }
+
+    $conn->close();
+} else {
+    header("location:login.php");
+    exit();
+}
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -115,27 +134,7 @@ echo '
                                                     <th>Recharge</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
-                                            <form method="post" action="checkout.php">';
-                                            while ($b = $broadcast_packs -> fetch_row()) {
-                                                echo '
-                                                <tr>
-                                                    <td>'.$b["1"].'</td>
-                                                    <td>'.$b["2"].'</td>
-                                                    <input type="hidden" name="type" value="Broadcast">
-                                                    <input type="hidden" name="id" value="'.$b["0"].'">
-                                                    <input type="hidden" name="name" value="'.$b["1"].'">
-                                                    <input type="hidden" name="amount" value="'.$b["2"].'">
-                                                    <td><a class="btn btn-link text-dark" href="packdetails.php?id='.$b["0"].'"
-                                                        >
-                                                            View Details
-                                                        </a>
-                                                    </td>
-                                                    <td><button type="submit" class="btn btn-dark">Recharge</button>
-                                                    </td>
-                                                </tr>';}
-                                            echo '
-                                            </form>
+                                            <tbody id="broadcastTableBody">
                                             </tbody>
                                         </table>
                                     </div>
@@ -152,10 +151,9 @@ echo '
                         <div class="row">
                         <div class="col-12">
                         <div class="card">
-                            <form method="post" action="alacartesumup.php?type=channelsPack">
                                     <div class="card-header">
                                     <div class="text-center">
-                                        <button type="submit" class="btn btn-dark">Recharge</button>
+                                        <button type="submit" id="channelsPackButton" class="btn btn-dark">Recharge</button>
                                     </div>
                                         <h3 class="card-title">Channels Pack Table</h3>
 
@@ -174,48 +172,25 @@ echo '
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap" id="channelsPackTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Price</th>
-                                                    <th>Channels</th>
-                                                    <th>Recharge</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                        <td>Base Pack</td>
-                                                        <td>'.$base_price.'</td>
-                                                        <td>Default Pack
-                                                    </td>
-                                                        <td> <input type="checkbox" name="channelpack_list[]" checked readonly disabled
-                                                            ></td>
+                                        <form action="alacartesumup.php" method="post" id="channelsPackForm">
+                                            <table class="table table-hover text-nowrap" id="channelsPackTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Price</th>
+                                                        <th>Channels</th>
+                                                        <th>Select Pack</th>
                                                     </tr>
-                                            ';
-                                            while ($c = $channels_pack -> fetch_row()) {
-                                                echo '
-                                                <tr>
-                                                    <td>'.$c["1"].'</td>
-                                                    <td>'.$c["2"].'</td>
-                                                    <input type="hidden" name="type" value="Channels">
-                                                    <td><a class="btn btn-link text-dark" href="packdetails.php?id='.$c["0"].'"
-                                                        >
-                                                            View Details
-                                                        </a>
-                                                    </td>
-                                                    <td> <input type="checkbox" name="channel_list[]"
-                                                                value="'.$c["0"].'"></td>
-                                                </tr>
-                                                ';}
-                                                echo '
+                                                </thead>
+                                                <tbody id="channelsPackTableBody">
+                                                    <input type="hidden" name="type" value="channelsPack">
                                                 </tbody>
                                             </table>
+                                        </form>
                                         </div>
                                         <!-- /.card-body -->
                                     </div>
                                     <!-- /.card -->
-                                </form>
                             </div>
                         </div>
                     </div>
@@ -225,10 +200,10 @@ echo '
                         <div class="row">
                             <div class="col-12">
                                 <div class="card">
-                                <form method="post" action="alacartesumup.php?type=allChannels">
+                                
                                     <div class="card-header">
                                         <div class="text-center">
-                                            <button type="submit" class="btn btn-dark">Recharge</button>
+                                            <button type="submit" id="allchannelsPackButton" class="btn btn-dark">Recharge</button>
                                         </div>
                                         <div class="card-tools">
                                             <div class="input-group input-group-sm" style="width: 150px;">
@@ -245,36 +220,21 @@ echo '
                                     </div>
                                     <!-- /.card-header -->
                                     <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap" id="allChannelsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Channel Name</th>
-                                                    <th>Price</th>
-                                                    <th>Add</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                        <td>Base Pack</td>
-                                                        <td>'.$base_price.'</td>
-                                                        <td> <input type="checkbox" name="channel_list[]" checked readonly disabled
-                                                                value=""></td>
-                                                    </tr>
-                                                ';
-                                                while ($a = $all_channels -> fetch_row()) {
-                                                    echo '
+                                        <form method="post" id="allchannelsPackForm" action="alacartesumup.php">
+                                            <table class="table table-hover text-nowrap" id="allChannelsTable">
+                                                <thead>
                                                     <tr>
-                                                        <td>'.$a["1"].'</td>
-                                                        <td>'.$a["2"].'</td>
-                                                        <td> <input type="checkbox" name="channel_list[]"
-                                                                value="'.$a["0"].'"></td>
-                                                    </tr>';}
-                                                    echo '
-                                                
-                                            </tbody>
-                                        </table>
+                                                        <th>Channel Name</th>
+                                                        <th>Price</th>
+                                                        <th>Add</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="allChannelsTableBody">
+                                                    <input type="hidden" name="type" value="allChannels">
+                                                </tbody>
+                                            </table>
+                                        </form>
                                     </div>
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -284,6 +244,68 @@ echo '
             </div>
         </div>
     </div>
+    <script>
+        var cachedData = <?php echo $json_data; ?> || {};
+        var broadcastTableBody = document.getElementById("broadcastTableBody");
+        var channelsPackTableBody = document.getElementById("channelsPackTableBody");
+        var allChannelsTableBody = document.getElementById("allChannelsTableBody");
+
+        
+        // Populate Broadcast Packs Table
+        cachedData.broadcast_packs.forEach(function (pack) {
+            var row = broadcastTableBody.insertRow();
+            row.insertCell(0).textContent = pack.pack_name;
+            row.insertCell(1).textContent = pack.pack_price;
+            row.insertCell(2).textContent = pack.channels;
+            var selectButton = document.createElement("button");
+            selectButton.textContent = "Select";
+            selectButton.className = "btn btn-dark";
+            selectButton.onclick = function () {
+                window.location.href = "checkout.php?type=Broadcast&pack="+pack.pack_name+"&price="+pack.pack_price;
+            };
+            row.insertCell(3).appendChild(selectButton);
+        });
+        
+
+        var channelsPackButton = document.getElementById("channelsPackButton");
+        channelsPackButton.onclick = function () {
+            var channelsPackForm = document.getElementById("channelsPackForm");
+            channelsPackForm.submit();
+        }
+
+    // Populate Channels Pack Table
+    cachedData.channels_pack.forEach(function (pack) {
+        var row = channelsPackTableBody.insertRow();
+        row.insertCell(0).textContent = pack.pack_name;
+        row.insertCell(1).textContent = pack.pack_price;
+        row.insertCell(2).textContent = pack.channels;
+        var checkbox = document.createElement('input');
+        checkbox.setAttribute('type', 'checkbox');
+        checkbox.setAttribute('name', 'channel_list[]');
+        checkbox.setAttribute('value', pack.pack_id);
+        row.insertCell(3).appendChild(checkbox);
+    });
+
+    var allchannelsPackButton = document.getElementById("allchannelsPackButton");
+    allchannelsPackButton.onclick = function () {
+        var allchannelsPackForm = document.getElementById("allchannelsPackForm");
+        allchannelsPackForm.submit();
+        }
+    
+    // Populate All Channels Table
+    cachedData.all_channels.forEach(function (channel) {
+        var row = allChannelsTableBody.insertRow();
+        row.insertCell(0).textContent = channel.channel_name;
+        row.insertCell(1).textContent = channel.price;
+        var checkbox = document.createElement('input');
+        checkbox.setAttribute('type', 'checkbox');
+        checkbox.setAttribute('name', 'channel_list[]');
+        checkbox.setAttribute('value', channel.channel_id);
+        row.insertCell(2).appendChild(checkbox);
+    });
+
+        // ... Rest of your JavaScript code ...
+    </script>
     <script src="jquery.min.js"></script>
     <script>
     // Show the first tab and hide the rest
@@ -372,12 +394,7 @@ function broadcastSearch() {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
     </script>
+    <!-- Your script includes -->
 </body>
 
-</html>';
-
-    }else{
-        header("location:login.php");
-    }
-    $conn->close();
-    ?>
+</html>

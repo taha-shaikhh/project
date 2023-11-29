@@ -2,7 +2,10 @@
 
     include "config.php";
     session_start();
-    $type = $_GET["type"];
+    if(isset($_SESSION["page"])){
+        unset($_SESSION["page"]);
+      }
+    $type = $_POST["type"];
     if($_SESSION["vc_id"]){
         if($type=="allChannels"){
 
@@ -34,14 +37,15 @@
             $total_amount = $base_price;
             $count = 0;
             $result = $conn->query($query);
-            $_SESSION["channels"]["name0"] = "Base Pack";
-            $_SESSION["channels"]["price0"] = $base_price;
+            $_SESSION["channelsname0"] = "Base Pack";
+            $_SESSION["channelsprice0"] = $base_price;
             while($r = $result->fetch_assoc()){
-                $_SESSION["channels"]["name".++$count] = $r["pack_name"];
-                $_SESSION["channels"]["price".$count] = $r["pack_price"];
+                $_SESSION["channelsname".++$count] = $r["pack_name"];
+                $_SESSION["channelsprice".$count] = $r["pack_price"];
                 $total_amount += $r["pack_price"];
             }
             $_SESSION["total_amount"] = $total_amount;
+            $_SESSION["count"]=$count;
             header("location:checkout.php?type=channelpack");
         }
     }
